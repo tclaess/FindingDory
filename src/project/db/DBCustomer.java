@@ -149,19 +149,18 @@ public class DBCustomer {
   }
   
    public static void main(String[] args){
-    try {
+       
+     try {
       
 
-      Customer customer = new Customer("1YD65", "Belgium", "Timothy", "De Campenaere", "19990909", "WHALE");
+      Customer customer = new Customer("1YD91", "Belgium", "Timo", "De Campenaere", "19990909", "MALE");
       DBCustomer.saveCustomer(customer);
-
-      Customer customerr = new Customer("1YD66", "Belgium", "Tom", "Claessens", "19991105", "MALE");
-      DBCustomer.deleteCustomer(customer);
 
         System.out.println(DBCustomer.getCustomers());
     } 
     catch (DBException ex) {
-      Logger.getLogger(DBBooking.class.getName()).log(Level.SEVERE, null, ex);
-    }
+        System.out.println("ex.getMessage");
+      // Logger.getLogger(DBBooking.class.getName()).log(Level.SEVERE, null, ex);
+    } 
   }
 }
