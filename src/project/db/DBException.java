@@ -5,10 +5,14 @@
  */
 package project.db;
 
-/**
- *
- * @author tibonuyts
- */
-public class DBException {
-    
+public class DBException extends Exception
+{
+    public DBException(String msg)
+    {
+        super(msg);
+    }
+    public DBException(Exception ex)
+    {
+        super(ex);
+    }
 }
