@@ -11,9 +11,13 @@ package project.logic;
  */
 public class Airport {
     private String airportCode;
+    private String airportName;
+    private String timeZone;
 
-    public Airport(String airportCode) {
+    public Airport(String airportCode, String airportName, String timeZone) {
         this.airportCode = airportCode;
+        this.airportName = airportName;
+        this.timeZone = timeZone;
     }
 
     public void setAirportCode(String airportCode) {
