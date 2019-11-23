@@ -19,7 +19,7 @@ public class Flight {
     private String ICAO;
     
 
-    public Flight(String flightNr, String depDateTime, String arrivalDateTime, String carbondio, String ICAO, String a_Code, String d_Code) {
+    public Flight(String flightNr, String depDateTime, String arrivalDateTime, String carbondio, String ICAO, String d_Code, String a_Code) {
         this.flightNr = flightNr;
         this.depDateTime = depDateTime;
         this.arrivalDateTime = arrivalDateTime;
@@ -87,10 +87,10 @@ public class Flight {
 
     
     
-    @Override
-    public String toString() {
+    /* @Override
+     public String toString() {
         return "Flight{" + "flightNr=" + flightNr + ", depDateTime=" + depDateTime + ", airline=" + airline + ", dAirport=" + dAirport + ", aAirport=" + aAirport + ", aCode=" + aCode + ", dCode=" + dCode + ", ICAO=" + ICAO + '}';
-    }
+    } */ 
     
     
     

@@ -25,8 +25,8 @@ public class DBFlight {
       con = DBConnector.getConnection();
       Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
       
-      String A_Code = getCode(dAirport);
-      String D_Code = getCode(aAirport);
+      String D_Code = getCode(dAirport);
+      String A_Code = getCode(aAirport);
       String Correct_depDate = getDateTime(depDate);
       
       String sql = "SELECT * "
@@ -35,22 +35,22 @@ public class DBFlight {
 
         // let op de spatie na '*' en 'CUSTOMER' in voorgaande SQL
       ResultSet rs = stmt.executeQuery(sql);
-      String flightnr, depdatetime, arrivaldatetime, carbondio, icao, a_code, d_code;
+      String flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code;
       
       if (rs.next()) {
-        flightnr = rs.getString("FLIGHTNR");
-        depdatetime = rs.getString("DEPDATETIME");
-	arrivaldatetime = rs.getString("ARRIVALDATETIME");
+        flightNr = rs.getString("FLIGHTNR");
+        depDateTime = rs.getString("DEPDATETIME");
+	arrivalDateTime = rs.getString("ARRIVALDATETIME");
 	carbondio = rs.getString("CARBONDIO");
-	icao = rs.getString("ICAO");
-	a_code = rs.getString("A_CODE");
-        d_code = rs.getString("D_CODE");
+	ICAO = rs.getString("ICAO");
+	a_Code = rs.getString("A_CODE");
+        d_Code = rs.getString("D_CODE");
 	
       } else {// we verwachten slechts 1 rij...
 	DBConnector.closeConnection(con);
 	return null;
       }
-      Flight flight = new Flight(flightnr, depdatetime, arrivaldatetime, carbondio, icao, a_code, d_code);
+      Flight flight = new Flight(flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code);
       DBConnector.closeConnection(con);
       return flight;
     } catch (Exception ex) {
@@ -119,8 +119,8 @@ public class DBFlight {
         /* String test = getCode("brussels");
             System.out.println(test);  */ 
         
-        Flight flight = getFlight("brussels", "new york", "22/11/2019");
-          System.out.println(flight.getaAirport());
+        Flight flight = getFlight("new york", "brussels", "22/11/2019");
+          System.out.println(flight.getA_Code());
         
         
           
