@@ -50,7 +50,7 @@ public class DBFlight {
 	DBConnector.closeConnection(con);
 	return null;
       }
-      Flight flight = new Flight(flightnr, depdatetime);
+      Flight flight = new Flight(flightnr, depdatetime, arrivaldatetime, carbondio, icao, a_code, d_code);
       DBConnector.closeConnection(con);
       return flight;
     } catch (Exception ex) {
