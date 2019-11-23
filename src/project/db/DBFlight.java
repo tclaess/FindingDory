@@ -12,50 +12,55 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import project.logic.Customer;
+import project.logic.Flight;
 
 /**
  *
  * @author tomclaessens
  */
 public class DBFlight {
-        public static Customer getFlight(String dAirport, String aAirport, String depDate) throws DBException {
+    public static Flight getFlight(String dAirport, String aAirport, String depDate) throws DBException {
     Connection con = null;
     try {
       con = DBConnector.getConnection();
       Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
       
+      String A_Code = getCode(dAirport);
+      String D_Code = getCode(aAirport);
+      String Correct_depDate = getDateTime(depDate);
       
-      String sql = "SELECT A_CODE "
-	+ "FROM AIRPORT "
-	+ "WHERE AIRPORTCODE = '" + dAirport + "' AND COUNTRY = '" + countryOfC + "'";
+      String sql = "SELECT * "
+	+ "FROM FLIGHT "
+	+ "WHERE A_CODE = '" + A_Code + "' AND D_CODE = '" + D_Code + "' AND CAST(DEPDATETIME as date) = '" + Correct_depDate + "'";
 
         // let op de spatie na '*' en 'CUSTOMER' in voorgaande SQL
       ResultSet rs = stmt.executeQuery(sql);
-      String id, country, firstName, lastName, birthdayDate, gender;
+      String flightnr, depdatetime, arrivaldatetime, carbondio, icao, a_code, d_code;
       
       if (rs.next()) {
-        id = rs.getString("ID");
-        country = rs.getString("COUNTRY");
-	firstName = rs.getString("FNAME");
-	lastName = rs.getString("LNAME");
-	birthdayDate = rs.getString("BDATE");
-	gender = rs.getString("GENDER");
+        flightnr = rs.getString("FLIGHTNR");
+        depdatetime = rs.getString("DEPDATETIME");
+	arrivaldatetime = rs.getString("ARRIVALDATETIME");
+	carbondio = rs.getString("CARBONDIO");
+	icao = rs.getString("ICAO");
+	a_code = rs.getString("A_CODE");
+        d_code = rs.getString("D_CODE");
 	
       } else {// we verwachten slechts 1 rij...
 	DBConnector.closeConnection(con);
 	return null;
       }
-      Customer customer = new Customer(id, country, firstName, lastName, birthdayDate, gender);
+      Flight flight = new Flight(flightnr, depdatetime);
       DBConnector.closeConnection(con);
-      return customer;
+      return flight;
     } catch (Exception ex) {
       ex.printStackTrace();
       DBConnector.closeConnection(con);
       throw new DBException(ex);
     }
-  }
-  public static Customer getCode(String AirportName) throws DBException {
+  } 
+    
+  public static String getCode(String AirportName) throws DBException {
     Connection con = null;
     try {
       con = DBConnector.getConnection();
@@ -64,32 +69,68 @@ public class DBFlight {
       
       String sql = "SELECT AIRPORTCODE "
 	+ "FROM AIRPORT "
-	+ "WHERE AIRPORTCODE = '" + AirportName + "'";
+	+ "WHERE AIRPORTNAME = '" + AirportName + "'";
 
-        // let op de spatie na '*' en 'CUSTOMER' in voorgaande SQL
+        
       ResultSet rs = stmt.executeQuery(sql);
-      String id, country, firstName, lastName, birthdayDate, gender;
+      String airportcode;
       
       if (rs.next()) {
-        id = rs.getString("ID");
-        country = rs.getString("COUNTRY");
-	firstName = rs.getString("FNAME");
-	lastName = rs.getString("LNAME");
-	birthdayDate = rs.getString("BDATE");
-	gender = rs.getString("GENDER");
+        airportcode = rs.getString("AIRPORTCODE");
+        
 	
       } else {// we verwachten slechts 1 rij...
 	DBConnector.closeConnection(con);
 	return null;
       }
-      Customer customer = new Customer(id, country, firstName, lastName, birthdayDate, gender);
+      
       DBConnector.closeConnection(con);
-      return customer;
+      return airportcode;
+      
     } catch (Exception ex) {
       ex.printStackTrace();
       DBConnector.closeConnection(con);
       throw new DBException(ex);
     }
+    
   }
   
+  public static String getDateTime(String date){
+      String a = Character.toString(date.charAt(0));
+      String b = Character.toString(date.charAt(1));
+      String c = Character.toString(date.charAt(3));
+      String d = Character.toString(date.charAt(4));
+      String e = Character.toString(date.charAt(6));
+      String f = Character.toString(date.charAt(7));
+      String g = Character.toString(date.charAt(8));
+      String h = Character.toString(date.charAt(9));
+      
+      
+      String dateTime = e+f+g+h+ "-" +c+d+ "-" +a+b;
+      return dateTime;
+  }
+  
+  
+  public static void main(String args[]){
+      
+      try {
+      
+          
+        /* String test = getCode("brussels");
+            System.out.println(test);  */ 
+        
+        Flight flight = getFlight("brussels", "new york", "22/11/2019");
+          System.out.println(flight.getaAirport());
+        
+        
+          
+    
+    } 
+    catch (DBException e) {
+       System.out.println("e.getMessage");
+        // Logger.getLogger(DBBooking.class.getName()).log(Level.SEVERE, null, ex);
+     } 
+      
+      
+  }
 }

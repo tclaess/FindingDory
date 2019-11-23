@@ -44,6 +44,31 @@ public class Flight {
         return depDateTime;
     }
 
+    public Airline getAirline() {
+        return airline;
+    }
+
+    public Airport getdAirport() {
+        return dAirport;
+    }
+
+    public Airport getaAirport() {
+        return aAirport;
+    }
+
+    public String getaCode() {
+        return aCode;
+    }
+
+    public String getdCode() {
+        return dCode;
+    }
+
+    public String getICAO() {
+        return ICAO;
+    }
+
+    
     @Override
     public String toString() {
         return "Flight{" + "flightNr=" + flightNr + ", depDateTime=" + depDateTime + ", airline=" + airline + ", dAirport=" + dAirport + ", aAirport=" + aAirport + ", aCode=" + aCode + ", dCode=" + dCode + ", ICAO=" + ICAO + '}';

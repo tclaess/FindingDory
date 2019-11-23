@@ -155,7 +155,7 @@ public class DBCustomer {
 
       Customer customer = new Customer("1YD91", "Belgium", "Timo", "De Campenaere", "19990909", "MALE");
       DBCustomer.saveCustomer(customer);
-
+         System.out.println("tibo");
         System.out.println(DBCustomer.getCustomers());
     } 
     catch (DBException ex) {
