@@ -119,8 +119,8 @@ public class DBFlight {
         /* String test = getCode("brussels");
             System.out.println(test);  */ 
         
-        Flight flight = getFlight("new york", "brussels", "22/11/2019");
-          System.out.println(flight.getA_Code());
+        Flight flight = getFlight("london", "brussels", "22/11/2019");
+          System.out.println(flight.getArrivalDateTime());
         
         
           
