@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import project.logic.Flight;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  *
@@ -237,8 +240,44 @@ public class DBFlight {
     
   }
   
+  public static ArrayList<Flight> tijdControle(ArrayList<Flight> arrayVluchten){
+      
+      for(int i = 0; i < arrayVluchten.size(); i += 2){
+          if(arrayVluchten.get(i).){
+              
+          }
+      }
+  }
   
-  
+  public static Date dateFormatter(String depDateTime){
+       Date todaysDate = new Date();
+       DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+       DateFormat df2 = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+       DateFormat df3 = new SimpleDateFormat("dd-MMM-yyyy");
+       DateFormat df4 = new SimpleDateFormat("MM dd, yyyy");
+       DateFormat df5 = new SimpleDateFormat("E, MMM dd yyyy");
+       DateFormat df6 = new SimpleDateFormat("E, MMM dd yyyy HH:mm:ss");
+       try
+       {
+           //format() method Formats a Date into a date/time string. 
+           String testDateString = df.format(todaysDate);
+           System.out.println("String in dd/MM/yyyy format is: " + testDateString);
+           String str2 = df2.format(todaysDate);
+           System.out.println("String in dd-MM-yyyy HH:mm:ss format is: " + str2);
+           String str3 = df3.format(todaysDate);
+           System.out.println("String in dd-MMM-yyyy format is: " + str3);
+           String str4 = df4.format(todaysDate);
+           System.out.println("String in MM dd, yyyy format is: " + str4);
+           String str5 = df5.format(todaysDate);
+           System.out.println("String in E, MMM dd yyyy format is: " + str5);
+           String str6 = df6.format(todaysDate);
+           System.out.println("String in E, E, MMM dd yyyy HH:mm:ss format is: " + str6);
+
+       }
+       catch (Exception ex ){
+          System.out.println(ex);
+       }
+  }
   
   // main 
   public static void main(String args[]){
@@ -255,7 +294,7 @@ public class DBFlight {
         System.out.println(test2.get(0).getA_Code()); */
         
         
-        ArrayList<Flight> test = getTransferFlight("new york", "new york", "22/11/2019");
+        ArrayList<Flight> test = getTransferFlight("brussels", "new york", "23/11/2019");
           System.out.println(test);
         /*System.out.println(test.get(0).getD_Code() + test.get(0).getD_Code()); 
         System.out.println(test.get(0).getA_Code()); 
