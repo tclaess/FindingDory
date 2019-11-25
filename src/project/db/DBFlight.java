@@ -19,7 +19,7 @@ import project.logic.Flight;
  * @author tomclaessens
  */
 public class DBFlight {
-    public static Flight getFlight(String dAirport, String aAirport, String depDate) throws DBException {
+    public static Flight getSingleFlight(String dAirport, String aAirport, String depDate) throws DBException {
     Connection con = null;
     try {
       con = DBConnector.getConnection();
@@ -109,6 +109,53 @@ public class DBFlight {
       String dateTime = e+f+g+h+ "-" +c+d+ "-" +a+b;
       return dateTime;
   }
+  
+  public static Flight getTransferFlight(String dAirport, String aAirport, String depDate) throws DBException
+  {
+    Connection con = null;
+    try {
+      con = DBConnector.getConnection();
+      Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+      
+      String D_Code = getCode(dAirport);
+      String A_Code = getCode(aAirport);
+      String Correct_depDate = getDateTime(depDate);
+      
+      String sqlDepFlights = "SELECT * "
+	+ "FROM FLIGHT "
+	+ "WHERE D_CODE = '" + D_Code + "'";
+      
+       String sqlArrFlights = "SELECT * "
+	+ "FROM FLIGHT "
+	+ "WHERE A_CODE = '" + A_Code + "'";
+
+        // let op de spatie na '*' en 'CUSTOMER' in voorgaande SQL
+      ResultSet rsDepFlights = stmt.executeQuery(sqlDepFlights);
+      ResultSet rsArrFlights = stmt.executeQuery(sqlArrFlights);
+      String flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code;
+      
+      if (rs.next()) {
+        flightNr = rs.getString("FLIGHTNR");
+        depDateTime = rs.getString("DEPDATETIME");
+	arrivalDateTime = rs.getString("ARRIVALDATETIME");
+	carbondio = rs.getString("CARBONDIO");
+	ICAO = rs.getString("ICAO");
+	a_Code = rs.getString("A_CODE");
+        d_Code = rs.getString("D_CODE");
+	
+      } else {// we verwachten slechts 1 rij...
+	DBConnector.closeConnection(con);
+	return null;
+      }
+      Flight flight = new Flight(flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code);
+      DBConnector.closeConnection(con);
+      return flight;
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      DBConnector.closeConnection(con);
+      throw new DBException(ex);
+    }
+  } 
   
   
   public static void main(String args[]){
