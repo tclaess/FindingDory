@@ -81,8 +81,9 @@ public class DBCustomer {
   }
   
   
-  public static void saveCustomer(Customer c) throws DBException {
+  public static boolean saveCustomer(Customer c) throws DBException {
     Connection con = null;
+    boolean done = false;
     try {
       con = DBConnector.getConnection();
       Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -100,6 +101,7 @@ public class DBCustomer {
 		+ ", GENDER = '" + c.getGender() + "'"
                 + "WHERE ID = '" + c.getID() + "' AND  COUNTRY = '" + c.getCountry() + "'";
         stmt.executeUpdate(sql);
+        done = true;
       } else {
 	// INSERT
 	sql = "INSERT into CUSTOMER "
@@ -111,18 +113,20 @@ public class DBCustomer {
 		+ "', " + c.getBirthdayDate() 
                 + ", '" + c.getGender() + "')";
         stmt.executeUpdate(sql);
+        done = true;
       }
       DBConnector.closeConnection(con);
+      return done;
     } catch (Exception ex) {
       ex.printStackTrace();
       DBConnector.closeConnection(con);
       throw new DBException(ex);
     }
-  }
-  //Customer delete = new Customer("9832", "Belgium", null, null, null, null);
+  } 
   
-  public static void deleteCustomer(Customer c) throws DBException{
+  public static boolean deleteCustomer(Customer c) throws DBException{
      Connection con = null;
+     boolean done = false;
     try {
       con = DBConnector.getConnection();
       Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -137,10 +141,15 @@ public class DBCustomer {
         sql = "DELETE FROM CUSTOMER "
                 + "WHERE ID = '" + c.getID() + "' AND  COUNTRY = '" + c.getCountry() + "'";
         stmt.executeUpdate(sql);
+        done = true;
       } else {// we verwachten slechts 1 rij...
 	DBConnector.closeConnection(con);
       }
+      
+      return done;
+      
     }
+    
     catch (Exception ex) {
       ex.printStackTrace();
       DBConnector.closeConnection(con);
@@ -153,10 +162,9 @@ public class DBCustomer {
      try {
       
 
-      Customer customer = new Customer("1YD91", "Belgium", "Timo", "De Campenaere", "19990909", "MALE");
-      DBCustomer.saveCustomer(customer);
-         System.out.println("tibo");
-        System.out.println(DBCustomer.getCustomers());
+      Customer customer = new Customer("G32019S1", "Belgium", "Timothy", "De Campenaere", "19990909", "MALE");
+         System.out.println(DBCustomer.deleteCustomer(customer));
+         
     } 
     catch (DBException ex) {
         System.out.println("ex.getMessage");
