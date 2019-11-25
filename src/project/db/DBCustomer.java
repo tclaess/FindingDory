@@ -163,7 +163,7 @@ public class DBCustomer {
       
 
       Customer customer = new Customer("G32019S1", "Belgium", "Timothy", "De Campenaere", "19990909", "MALE");
-         System.out.println(DBCustomer.getCustomers());
+      System.out.println(DBCustomer.getCustomers());
          
     } 
     catch (DBException ex) {

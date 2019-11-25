@@ -68,8 +68,8 @@ public class DBFlight {
       String A_Code = getCode(aAirport);
       String Correct_depDate = getDateTime(depDate);
       
-      ArrayList<Flight> arrayEersteVluchten = getEersteVluchten(D_Code);
-      ArrayList<Flight> arrayTweedeVluchten = getTweedeVluchten(A_Code);
+      ArrayList<Flight> arrayEersteVluchten = getEersteVluchten(D_Code, Correct_depDate);
+      ArrayList<Flight> arrayTweedeVluchten = getTweedeVluchten(A_Code, Correct_depDate);
       
       // twee arrayslists vergelijken
       
@@ -146,7 +146,7 @@ public class DBFlight {
   }
     
   
-  public static ArrayList<Flight> getEersteVluchten(String D_Code) throws DBException
+  public static ArrayList<Flight> getEersteVluchten(String D_Code, String Correct_depDate) throws DBException
   {
       Connection con = null;
     try {
@@ -157,7 +157,7 @@ public class DBFlight {
       
       String sqlDepFlights = "SELECT * "
 	+ "FROM FLIGHT "
-	+ "WHERE D_CODE = '" + D_Code + "'";
+	+ "WHERE D_CODE = '" + D_Code + "'" + "AND CAST(DEPDATETIME as DATE) = '" + Correct_depDate + "'";
       
       
         // let op de spatie na '*' en 'CUSTOMER' in voorgaande SQL
@@ -192,7 +192,7 @@ public class DBFlight {
     
   }
   
-  public static ArrayList<Flight> getTweedeVluchten(String A_Code) throws DBException
+  public static ArrayList<Flight> getTweedeVluchten(String A_Code, String Correct_depDate) throws DBException
   {
       Connection con = null;
     try {
@@ -203,7 +203,7 @@ public class DBFlight {
       
       String sqlArrFlights = "SELECT * "
 	+ "FROM FLIGHT "
-	+ "WHERE A_CODE = '" + A_Code + "'";
+	+ "WHERE A_CODE = '" + A_Code + "' AND CAST(DEPDATETIME as DATE) = '" + Correct_depDate + "'";
       
       
         // let op de spatie na '*' en 'CUSTOMER' in voorgaande SQL
