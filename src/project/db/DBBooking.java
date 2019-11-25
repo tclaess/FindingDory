@@ -17,7 +17,7 @@ import project.logic.Booking;
 
 public class DBBooking {
     
-    public static void deleteBooking(Booking b){
+    public static void deleteBooking(Booking b) throws DBException{
         Connection con = null;
     try {
       con = DBConnector.getConnection();
