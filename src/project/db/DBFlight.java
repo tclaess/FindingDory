@@ -134,14 +134,14 @@ public class DBFlight {
       ResultSet rsArrFlights = stmt.executeQuery(sqlArrFlights);
       String flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code;
       
-      if (rs.next()) {
-        flightNr = rs.getString("FLIGHTNR");
-        depDateTime = rs.getString("DEPDATETIME");
-	arrivalDateTime = rs.getString("ARRIVALDATETIME");
-	carbondio = rs.getString("CARBONDIO");
-	ICAO = rs.getString("ICAO");
-	a_Code = rs.getString("A_CODE");
-        d_Code = rs.getString("D_CODE");
+      if (rsDepFlights.next()) {
+        flightNr = rsDepFlights.getString("FLIGHTNR");
+        depDateTime = rsDepFlights.getString("DEPDATETIME");
+	arrivalDateTime = rsDepFlights.getString("ARRIVALDATETIME");
+	carbondio = rsDepFlights.getString("CARBONDIO");
+	ICAO = rsDepFlights.getString("ICAO");
+	a_Code = rsDepFlights.getString("A_CODE");
+        d_Code = rsDepFlights.getString("D_CODE");
 	
       } else {// we verwachten slechts 1 rij...
 	DBConnector.closeConnection(con);
@@ -166,7 +166,7 @@ public class DBFlight {
         /* String test = getCode("brussels");
             System.out.println(test);  */ 
         
-        Flight flight = getFlight("london", "brussels", "22/11/2019");
+        Flight flight = getTransferFlight("london", "brussels", "22/11/2019");
           System.out.println(flight.getArrivalDateTime());
         
         
