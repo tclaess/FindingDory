@@ -22,7 +22,16 @@ import java.util.Date;
  * @author tomclaessens
  */
 public class DBFlight {
-    public static Flight getSingleFlight(String dAirport, String aAirport, String depDate) throws DBException {
+  public static ArrayList<ArrayList<Flight>> getFlights(String dAirport, String aAirport, String depDate) throws DBException {
+        ArrayList<Flight> singleFlights = getSingleFlights(dAirport, aAirport, depDate);
+        ArrayList<Flight> transferFlights = getTransferFlight(dAirport, aAirport, depDate);
+        ArrayList<ArrayList<Flight>> flights = new ArrayList();
+        flights.add(singleFlights);
+        flights.add(transferFlights);
+        return flights; 
+    }
+    
+    public static ArrayList<Flight> getSingleFlights(String dAirport, String aAirport, String depDate) throws DBException {
     Connection con = null;
     try {
       con = DBConnector.getConnection();
@@ -39,8 +48,8 @@ public class DBFlight {
         // let op de spatie na '*' en 'CUSTOMER' in voorgaande SQL
       ResultSet rs = stmt.executeQuery(sql);
       String flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code;
-      
-      if (rs.next()) {
+      ArrayList<Flight> singleFlights = new ArrayList();
+      while (rs.next()) {
         flightNr = rs.getString("FLIGHTNR");
         depDateTime = rs.getString("DEPDATETIME");
 	arrivalDateTime = rs.getString("ARRIVALDATETIME");
@@ -48,20 +57,18 @@ public class DBFlight {
 	ICAO = rs.getString("ICAO");
 	a_Code = rs.getString("A_CODE");
         d_Code = rs.getString("D_CODE");
-	
-      } else {// we verwachten slechts 1 rij...
-	DBConnector.closeConnection(con);
-	return null;
+	Flight flight = new Flight(flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code);
+        singleFlights.add(flight);
       }
-      Flight flight = new Flight(flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code);
       DBConnector.closeConnection(con);
-      return flight;
+      return singleFlights;
     } catch (Exception ex) {
       ex.printStackTrace();
       DBConnector.closeConnection(con);
       throw new DBException(ex);
     }
   } 
+ 
 
   public static ArrayList<Flight> getTransferFlight(String dAirport, String aAirport, String depDate) throws DBException
   {
