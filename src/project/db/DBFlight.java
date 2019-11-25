@@ -110,7 +110,7 @@ public class DBFlight {
       return dateTime;
   }
   
-  public static Flight getTransferFlight(String dAirport, String aAirport, String depDate) throws DBException
+  public static ArrayList<Flight> getTransferFlight(String dAirport, String aAirport, String depDate) throws DBException
   {
     Connection con = null;
     try {
@@ -125,30 +125,35 @@ public class DBFlight {
 	+ "FROM FLIGHT "
 	+ "WHERE D_CODE = '" + D_Code + "'";
       
-       String sqlArrFlights = "SELECT * "
+       /*String sqlArrFlights = "SELECT * "
 	+ "FROM FLIGHT "
-	+ "WHERE A_CODE = '" + A_Code + "'";
+	+ "WHERE A_CODE = '" + A_Code + "'";*/
 
         // let op de spatie na '*' en 'CUSTOMER' in voorgaande SQL
       ResultSet rsDepFlights = stmt.executeQuery(sqlDepFlights);
-      ResultSet rsArrFlights = stmt.executeQuery(sqlArrFlights);
-      String flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code;
+      /*ResultSet rsArrFlights = stmt.executeQuery(sqlArrFlights);*/
       
-      if (rsDepFlights.next()) {
-        flightNr = rsDepFlights.getString("FLIGHTNR");
-        depDateTime = rsDepFlights.getString("DEPDATETIME");
-	arrivalDateTime = rsDepFlights.getString("ARRIVALDATETIME");
-	carbondio = rsDepFlights.getString("CARBONDIO");
-	ICAO = rsDepFlights.getString("ICAO");
-	a_Code = rsDepFlights.getString("A_CODE");
-        d_Code = rsDepFlights.getString("D_CODE");
-	
-      } else {// we verwachten slechts 1 rij...
-	DBConnector.closeConnection(con);
-	return null;
+      String flightNr1, depDateTime1, arrivalDateTime1, carbondio1, ICAO1, d_Code1, a_Code1;
+      ArrayList<Flight> arrayEersteVluchten = new ArrayList<Flight>();
+      while(rsDepFlights.next())
+      {
+          arrayEersteVluchten.
+        flightNr1 = rsDepFlights.getString("FLIGHTNR");
+        depDateTime1 = rsDepFlights.getString("DEPDATETIME");
+	arrivalDateTime1 = rsDepFlights.getString("ARRIVALDATETIME");
+	carbondio1 = rsDepFlights.getString("CARBONDIO");
+	ICAO1 = rsDepFlights.getString("ICAO");
+	a_Code1 = rsDepFlights.getString("A_CODE");
+        d_Code1 = rsDepFlights.getString("D_CODE");
+        Flight flight = new Flight(flightNr1, depDateTime1, arrivalDateTime1, carbondio1, ICAO1, d_Code1, a_Code1);
+        arrayEersteVluchten.add(flight);
       }
-      Flight flight = new Flight(flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code);
       DBConnector.closeConnection(con);
+      
+      String sqlDepFlights2 = "SELECT * "
+	+ "FROM FLIGHT "
+	+ "WHERE D_CODE = '" + a_Code1 + "'" + "AND A_CODE = '" + A_Code + "'";
+      
       return flight;
     } catch (Exception ex) {
       ex.printStackTrace();
