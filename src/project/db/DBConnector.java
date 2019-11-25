@@ -18,7 +18,7 @@ public class DBConnector {
     public static Connection getConnection() throws DBException {
         Connection con = null;
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
           
             
             String URL = "jdbc:mysql://pdbmbook.com:3306/db2019_03";

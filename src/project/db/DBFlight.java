@@ -68,8 +68,8 @@ public class DBFlight {
       String A_Code = getCode(aAirport);
       String Correct_depDate = getDateTime(depDate);
       
-      ArrayList<Flight> arrayEersteVluchten = hulpMethode1(D_Code);
-      ArrayList<Flight> arrayTweedeVluchten = hulpMethode2(A_Code);
+      ArrayList<Flight> arrayEersteVluchten = getEersteVluchten(D_Code);
+      ArrayList<Flight> arrayTweedeVluchten = getTweedeVluchten(A_Code);
       
       // twee arrayslists vergelijken
       
@@ -87,7 +87,7 @@ public class DBFlight {
       
       
       
-      return arrayVluchten;
+      return  arrayVluchten;
     
   } 
   
@@ -146,7 +146,7 @@ public class DBFlight {
   }
     
   
-  public static ArrayList<Flight> hulpMethode1(String D_Code) throws DBException
+  public static ArrayList<Flight> getEersteVluchten(String D_Code) throws DBException
   {
       Connection con = null;
     try {
@@ -192,7 +192,7 @@ public class DBFlight {
     
   }
   
-  public static ArrayList<Flight> hulpMethode2(String A_Code) throws DBException
+  public static ArrayList<Flight> getTweedeVluchten(String A_Code) throws DBException
   {
       Connection con = null;
     try {
@@ -255,11 +255,12 @@ public class DBFlight {
         System.out.println(test2.get(0).getA_Code()); */
         
         
-        ArrayList<Flight> test = getTransferFlight("new york", "brussel", "22/11/2019");
-        System.out.println(test.get(0).getD_Code() + test.get(0).getD_Code()); 
+        ArrayList<Flight> test = getTransferFlight("new york", "new york", "22/11/2019");
+          System.out.println(test);
+        /*System.out.println(test.get(0).getD_Code() + test.get(0).getD_Code()); 
         System.out.println(test.get(0).getA_Code()); 
         System.out.println(test.get(1).getD_Code()); 
-        System.out.println(test.get(1).getA_Code()); 
+        System.out.println(test.get(1).getA_Code());*/ 
         
     
     } 

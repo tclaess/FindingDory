@@ -85,12 +85,21 @@ public class Flight {
         this.ICAO = ICAO;
     }
 
+    @Override
+    public String toString() {
+        return "flightNr= " + flightNr + "\n" 
+                + "depDateTime= " + depDateTime + "\n"  
+                + "arrivalDateTime= " + arrivalDateTime + "\n"  
+                + "carbondio= " + carbondio + "\n"  
+                + "d_Code= " + d_Code + "\n"  
+                + "a_Code= " + a_Code + "\n"  
+                + "ICAO= " + ICAO + "\n"
+                + " " + "\n";
+    }
+
     
     
-    /* @Override
-     public String toString() {
-        return "Flight{" + "flightNr=" + flightNr + ", depDateTime=" + depDateTime + ", airline=" + airline + ", dAirport=" + dAirport + ", aAirport=" + aAirport + ", aCode=" + aCode + ", dCode=" + dCode + ", ICAO=" + ICAO + '}';
-    } */ 
+     
     
     
     

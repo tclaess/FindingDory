@@ -20,6 +20,15 @@ public class Airport {
         this.timeZone = timeZone;
     }
 
+    public void setAirportName(String airportName) {
+        this.airportName = airportName;
+    }
+
+    public String getAirportName() {
+        return airportName;
+    }
+    
+
     public void setAirportCode(String airportCode) {
         this.airportCode = airportCode;
     }
