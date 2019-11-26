@@ -257,7 +257,6 @@ public class DBFlight {
               Date date1 = format.parse(arrayVluchten.get(i).getArrivalDateTime().substring(10));
               Date date2 = format.parse(arrayVluchten.get(i+1).getDepDateTime().substring(10));
               long difference = date2.getTime() - date1.getTime();
-              System.out.println(difference);
               //de output van difference is in milliseconden, 1 800 000 milliseconden zijn 30 minuten,
               //dit nemen we als minimumtijd die je nodig hebt om over te stappen.
               if(difference >= 1800000){
