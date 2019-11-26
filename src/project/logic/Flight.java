@@ -64,8 +64,6 @@ public class Flight {
     public void setDepDateTime(String depDateTime) {
         this.depDateTime = depDateTime;
     }
-    
-    public
 
     public void setArrivalDateTime(String arrivalDateTime) {
         this.arrivalDateTime = arrivalDateTime;

@@ -14,15 +14,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import project.logic.Flight;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 
 /**
  *
  * @author tomclaessens
  */
 public class DBFlight {
-  public static ArrayList<ArrayList<Flight>> getFlights(String dAirport, String aAirport, String depDate) throws DBException {
+    
+  public static ArrayList<ArrayList<Flight>> getFlights(String dAirport, String aAirport, String depDate) throws DBException, ParseException {
         ArrayList<Flight> singleFlights = getSingleFlights(dAirport, aAirport, depDate);
         ArrayList<Flight> transferFlights = getTransferFlight(dAirport, aAirport, depDate);
         ArrayList<ArrayList<Flight>> flights = new ArrayList();
@@ -70,7 +73,7 @@ public class DBFlight {
   } 
  
 
-  public static ArrayList<Flight> getTransferFlight(String dAirport, String aAirport, String depDate) throws DBException
+  public static ArrayList<Flight> getTransferFlight(String dAirport, String aAirport, String depDate) throws DBException, ParseException
   {
     Connection con = null;
     
@@ -95,9 +98,9 @@ public class DBFlight {
           }
       }
       
+      ArrayList<Flight> transferVluchten = tijdControle(arrayVluchten);
       
-      
-      return  arrayVluchten;
+      return  transferVluchten;
     
   } 
   
@@ -170,7 +173,7 @@ public class DBFlight {
 	+ "WHERE D_CODE = '" + D_Code + "'" + "AND CAST(DEPDATETIME as DATE) = '" + Correct_depDate + "'";
       
       
-        // let op de spatie na '*' en 'CUSTOMER' in voorgaande SQL
+        // let op de spatie na '*' en 'FLIGHT' in voorgaande SQL
       ResultSet rsDepFlights = stmt.executeQuery(sqlDepFlights);
       
       
@@ -247,16 +250,24 @@ public class DBFlight {
     
   }
   
-  public static ArrayList<Flight> tijdControle(ArrayList<Flight> arrayVluchten){
-      
+  public static ArrayList<Flight> tijdControle(ArrayList<Flight> arrayVluchten) throws ParseException{
+      ArrayList<Flight> HaalbareFlights = new ArrayList<>();
       for(int i = 0; i < arrayVluchten.size(); i += 2){
-          if(arrayVluchten.get(i).){
-              
-          }
+          //if(arrayVluchten.get(i).getArrivalDateTime().compareTo(arrayVluchten.get(i+1).getArrivalDateTime()) < 0){
+              SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+              Date date1 = format.parse(arrayVluchten.get(i).getArrivalDateTime().substring(10));
+              Date date2 = format.parse(arrayVluchten.get(i+1).getDepDateTime().substring(10));
+              long difference = date2.getTime() - date1.getTime();
+              System.out.println(difference);
+              if(difference >= 30){
+                  HaalbareFlights.add(arrayVluchten.get(i));
+                  HaalbareFlights.add(arrayVluchten.get(i+1));
+              }
       }
+      return HaalbareFlights; 
   }
   
-  public static Date dateFormatter(String depDateTime){
+ /* public static Date dateFormatter(String depDateTime){
        Date todaysDate = new Date();
        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
        DateFormat df2 = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
@@ -284,10 +295,10 @@ public class DBFlight {
        catch (Exception ex ){
           System.out.println(ex);
        }
-  }
+  }*/
   
   // main 
-  public static void main(String args[]){
+  public static void main(String args[]) throws ParseException{
       
       try {
       
@@ -301,7 +312,7 @@ public class DBFlight {
         System.out.println(test2.get(0).getA_Code()); */
         
         
-        ArrayList<Flight> test = getTransferFlight("brussels", "new york", "23/11/2019");
+        ArrayList<Flight> test = getTransferFlight("brussels", "london", "23/11/2019");
           System.out.println(test);
         /*System.out.println(test.get(0).getD_Code() + test.get(0).getD_Code()); 
         System.out.println(test.get(0).getA_Code()); 
