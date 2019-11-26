@@ -253,13 +253,14 @@ public class DBFlight {
   public static ArrayList<Flight> tijdControle(ArrayList<Flight> arrayVluchten) throws ParseException{
       ArrayList<Flight> HaalbareFlights = new ArrayList<>();
       for(int i = 0; i < arrayVluchten.size(); i += 2){
-          //if(arrayVluchten.get(i).getArrivalDateTime().compareTo(arrayVluchten.get(i+1).getArrivalDateTime()) < 0){
               SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
               Date date1 = format.parse(arrayVluchten.get(i).getArrivalDateTime().substring(10));
               Date date2 = format.parse(arrayVluchten.get(i+1).getDepDateTime().substring(10));
               long difference = date2.getTime() - date1.getTime();
               System.out.println(difference);
-              if(difference >= 30){
+              //de output van difference is in milliseconden, 1 800 000 milliseconden zijn 30 minuten,
+              //dit nemen we als minimumtijd die je nodig hebt om over te stappen.
+              if(difference >= 1800000){
                   HaalbareFlights.add(arrayVluchten.get(i));
                   HaalbareFlights.add(arrayVluchten.get(i+1));
               }
