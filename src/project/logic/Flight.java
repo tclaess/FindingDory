@@ -95,13 +95,6 @@ public class Flight {
                 + "a_Code= " + a_Code + "\n"  
                 + "ICAO= " + ICAO + "\n"
                 + " " + "\n";
-    }
-
-    
-    
-     
-    
-    
-    
+    } 
     
 }

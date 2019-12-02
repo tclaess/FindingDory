@@ -108,16 +108,76 @@ public class DBFlight {
     
   } 
   
+  
 
   /** Vanaf hieronder: sorteeralgoritmen 
-  
   */
   
-  public static int getCO2(ArrayList<Flight[]> lijst){
+  /*public static int getCO2(ArrayList<Flight[]> lijst){
+      
+  }*/
+  
+public static ArrayList<Flight[]> sortCarbonDio(String dAirport, String aAirport, String depDate) throws DBException, ParseException{
+      Connection con = null;
+      
+      
+      String D_Code = getCode(dAirport);
+      String A_Code = getCode(aAirport);
+      String Correct_depDate = getDateTime(depDate);
+      
+      ArrayList<String> hulpArray = new ArrayList<>();
+      ArrayList<Flight[]> gesorteerdeFlights= new ArrayList<>();
+      
+      ArrayList<ArrayList<Flight[]>> alleVluchten = new  ArrayList<>();
+      ArrayList<Flight[]> singleVluchten = new  ArrayList<>();
+      ArrayList<Flight[]> transferVluchten = new  ArrayList<>();
+      alleVluchten = getFlights(dAirport, aAirport, depDate);
+      singleVluchten = getFlights(dAirport, aAirport, depDate).get(0);
+      transferVluchten = getFlights(dAirport, aAirport, depDate).get(1);
+      
+      
+      for(int i = 0; i < singleVluchten.size(); i++){
+              String carbonDio = singleVluchten.get(i)[0].getCarbondio();
+              float carbonD = Float.parseFloat(carbonDio);
+              //ArrayList<Flight> flight = new ArrayList<>(1);
+              //flight.add(singleVluchten.get(i));
+              for(int o = 0; o < hulpArray.size(); o++){
+                  if(carbonD < Float.parseFloat(hulpArray.get(o))){
+                      hulpArray.add(o, carbonDio);
+                      gesorteerdeFlights.add(o, singleVluchten.get(i));
+                      break;
+                  }         
+          }
+              if(hulpArray.contains(carbonDio) == false && gesorteerdeFlights.contains(singleVluchten.get(i)) == false){
+              hulpArray.add(carbonDio);
+              gesorteerdeFlights.add(singleVluchten.get(i));
+              }
+      }
+      
+      for(int i = 0; i < transferVluchten.size(); i++){
+          String carbonDio1 = transferVluchten.get(i)[0].getCarbondio();
+          float carbonD1 = Float.parseFloat(carbonDio1);
+          String carbonDio2 = transferVluchten.get(i)[1].getCarbondio();
+          float carbonD2 = Float.parseFloat(carbonDio2);
+          float carbonDio = carbonD1 + carbonD2;
+          ArrayList<Flight> flight = new ArrayList<>(2);
+              flight.add(0, transferVluchten.get(i)[0]);
+              flight.add(1, transferVluchten.get(i)[1]);
+              for(int o = 0; o < hulpArray.size(); o++){
+                  if(carbonDio < Float.parseFloat(hulpArray.get(o))){
+                      hulpArray.add(o, Float.toString(carbonDio));
+                      gesorteerdeFlights.add(o, transferVluchten.get(i));
+                      break;
+                  }
+              }
+              if(hulpArray.contains(carbonDio) == false && gesorteerdeFlights.contains(transferVluchten.get(i)) == false){
+              hulpArray.add(Float.toString(carbonDio));
+              gesorteerdeFlights.add(transferVluchten.get(i));
+              }
+      } 
+        return gesorteerdeFlights;
       
   }
-  
-
   
 /* Vanaf hieronder vindt u de hulpmethoden voor de methode getTransferFlight. We gaan er in ons model vanuit dat er
    maar 1 transfer kan plaatsvinden.
@@ -300,8 +360,14 @@ public class DBFlight {
         ArrayList<Flight> test2 = hulpMethode2(getCode("new york"));
         System.out.println(test2.get(0).getA_Code()); */
         
-        
-        ArrayList<Flight[]> test = getTransferFlights("brussels", "london", "23/11/2019");
+        ArrayList<Flight[]> test = sortCarbonDio("new york", "london", "23/11/2019");
+          System.out.println(test.get(0).length);
+          System.out.println(test.get(1).length);
+          System.out.println(test.get(2).length);
+          System.out.println(test.get(3).length);
+          
+          
+       /* ArrayList<Flight[]> test = getTransferFlights("brussels", "london", "23/11/2019");
           System.out.println("optie 1");
           System.out.println("vlucht 1");
         System.out.println(test.get(0)[0].getD_Code());
@@ -310,7 +376,7 @@ public class DBFlight {
           System.out.println("vlucht2");
         System.out.println(test.get(0)[1].getD_Code());
         System.out.println(test.get(0)[1].getA_Code()); 
-        System.out.println(test.get(0)[1].getICAO()); 
+        System.out.println(test.get(0)[1].getICAO()); */
         /* System.out.println("optie2");
             System.out.println("vlucht1");
         System.out.println(test.get(1)[0].getD_Code()); 
