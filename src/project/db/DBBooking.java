@@ -64,6 +64,94 @@ public class DBBooking {
       throw new DBException(ex);
     }              
   }
+    
+    public static Booking shortestBooking(Booking booking) throws DBException{
+       Connection con = null;
+      try {
+         con = DBConnector.getConnection();
+         Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+         
+        
+         
+      }
+      catch (DBException dbe) {
+      dbe.printStackTrace();
+      DBConnector.closeConnection(con);
+      throw dbe;
+    } 
+      catch (Exception ex) {
+      ex.printStackTrace();
+      DBConnector.closeConnection(con);
+      throw new DBException(ex);
+    }  
+      return;
+    } 
+
+    public static Booking leastTransfersBooking(Booking booking) throws DBException{
+        Connection con = null;
+      try {
+         con = DBConnector.getConnection();
+         Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+         
+        
+         
+      }
+      catch (DBException dbe) {
+      dbe.printStackTrace();
+      DBConnector.closeConnection(con);
+      throw dbe;
+    } 
+      catch (Exception ex) {
+      ex.printStackTrace();
+      DBConnector.closeConnection(con);
+      throw new DBException(ex);
+    }  
+      return;
+    } 
+    
+
+    public static void cheapestBooking(Booking booking) throws DBException{
+    Connection con = null;
+      try {
+         con = DBConnector.getConnection();
+         Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+         
+        
+         
+      }
+      catch (DBException dbe) {
+      dbe.printStackTrace();
+      DBConnector.closeConnection(con);
+      throw dbe;
+    } 
+      catch (Exception ex) {
+      ex.printStackTrace();
+      DBConnector.closeConnection(con);
+      throw new DBException(ex);
+    }              
+}
+    
+    public static Booking lowestCO2Booking(Booking booking) throws DBException{
+        Connection con = null;
+      try {
+         con = DBConnector.getConnection();
+         Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+         
+        
+         
+      }
+      catch (DBException dbe) {
+      dbe.printStackTrace();
+      DBConnector.closeConnection(con);
+      throw dbe;
+    } 
+      catch (Exception ex) {
+      ex.printStackTrace();
+      DBConnector.closeConnection(con);
+      throw new DBException(ex);
+    }
+      return;
+    }
 }
   /*public static ArrayList<Customer> getGraduates() throws DBException {
     Connection con = null;

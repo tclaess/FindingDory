@@ -105,9 +105,11 @@ public class DBFlight {
   } 
   
   
-// hulpmethoden
+/* Vanaf hieronder vindt u de hulpmethoden voor de methode getTransferFlight. We gaan er in ons model vanuit dat er
+   maar 1 transfer kan plaatsvinden.
+  */
 
-    
+  // Via deze methode krijgt men de airportcode door de naam van de luchthaven in te geven.
   public static String getCode(String AirportName) throws DBException {
     Connection con = null;
     try {
@@ -143,6 +145,7 @@ public class DBFlight {
     
   }
   
+  // Via deze methode wordt de tijd van de datum gescheiden, zodat alleen de datum overblijft.
   public static String getDateTime(String date){
       String a = Character.toString(date.charAt(0));
       String b = Character.toString(date.charAt(1));
@@ -158,7 +161,7 @@ public class DBFlight {
       return dateTime;
   }
     
-  
+  // Deze methode geeft de vluchten weer van de vertrekluchthaven naar de tussenstop.
   public static ArrayList<Flight> getEersteVluchten(String D_Code, String Correct_depDate) throws DBException
   {
       Connection con = null;
@@ -173,7 +176,6 @@ public class DBFlight {
 	+ "WHERE D_CODE = '" + D_Code + "'" + "AND CAST(DEPDATETIME as DATE) = '" + Correct_depDate + "'";
       
       
-        // let op de spatie na '*' en 'FLIGHT' in voorgaande SQL
       ResultSet rsDepFlights = stmt.executeQuery(sqlDepFlights);
       
       
@@ -205,6 +207,7 @@ public class DBFlight {
     
   }
   
+  // Deze methode geeft de vluchten weer van de tussenstop naar de aankomstluchthaven
   public static ArrayList<Flight> getTweedeVluchten(String A_Code, String Correct_depDate) throws DBException
   {
       Connection con = null;
@@ -250,6 +253,9 @@ public class DBFlight {
     
   }
   
+  /* In deze methode controleren we of de reiziger voldoende tijd heeft om over te stappen in de 
+     tussenstop. We nemen een marge van 30 minuten.
+  */
   public static ArrayList<Flight> tijdControle(ArrayList<Flight> arrayVluchten) throws ParseException{
       ArrayList<Flight> HaalbareFlights = new ArrayList<>();
       for(int i = 0; i < arrayVluchten.size(); i += 2){
