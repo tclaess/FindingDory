@@ -25,16 +25,16 @@ import java.util.Date;
  */
 public class DBFlight {
     
-  public static ArrayList<ArrayList<Flight>> getFlights(String dAirport, String aAirport, String depDate) throws DBException, ParseException {
-        ArrayList<Flight> singleFlights = getSingleFlights(dAirport, aAirport, depDate);
-        ArrayList<Flight> transferFlights = getTransferFlight(dAirport, aAirport, depDate);
-        ArrayList<ArrayList<Flight>> flights = new ArrayList();
+  public static ArrayList<ArrayList<Flight[]>> getFlights(String dAirport, String aAirport, String depDate) throws DBException, ParseException {
+        ArrayList<Flight[]> singleFlights = getSingleFlights(dAirport, aAirport, depDate);
+        ArrayList<Flight[]> transferFlights = getTransferFlights(dAirport, aAirport, depDate);
+        ArrayList<ArrayList<Flight[]>> flights = new ArrayList();
         flights.add(singleFlights);
         flights.add(transferFlights);
         return flights; 
     }
     
-    public static ArrayList<Flight> getSingleFlights(String dAirport, String aAirport, String depDate) throws DBException {
+    public static ArrayList<Flight[]> getSingleFlights(String dAirport, String aAirport, String depDate) throws DBException {
     Connection con = null;
     try {
       con = DBConnector.getConnection();
@@ -51,7 +51,7 @@ public class DBFlight {
         // let op de spatie na '*' en 'CUSTOMER' in voorgaande SQL
       ResultSet rs = stmt.executeQuery(sql);
       String flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code;
-      ArrayList<Flight> singleFlights = new ArrayList();
+      ArrayList<Flight[]> singleFlights = new ArrayList();
       while (rs.next()) {
         flightNr = rs.getString("FLIGHTNR");
         depDateTime = rs.getString("DEPDATETIME");
@@ -61,7 +61,9 @@ public class DBFlight {
 	a_Code = rs.getString("A_CODE");
         d_Code = rs.getString("D_CODE");
 	Flight flight = new Flight(flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code);
-        singleFlights.add(flight);
+        Flight[] flightArr = new Flight[1];
+        flightArr[0] = flight; 
+        singleFlights.add(flightArr);
       }
       DBConnector.closeConnection(con);
       return singleFlights;
@@ -73,7 +75,7 @@ public class DBFlight {
   } 
  
 
-  public static ArrayList<Flight> getTransferFlight(String dAirport, String aAirport, String depDate) throws DBException, ParseException
+  public static ArrayList<Flight[]> getTransferFlights(String dAirport, String aAirport, String depDate) throws DBException, ParseException
   {
     Connection con = null;
     
@@ -88,22 +90,34 @@ public class DBFlight {
       
       int lengte1 = arrayEersteVluchten.size();
       int lengte2 = arrayTweedeVluchten.size(); 
-      ArrayList<Flight> arrayVluchten = new ArrayList<Flight>();
+      ArrayList<Flight[]> arrayVluchten = new ArrayList<Flight[]>();
       for(int i = 0; i < lengte1; i++ ){
           for(int e = 0; e < lengte2; e++ ){
               if(arrayEersteVluchten.get(i).getA_Code().equalsIgnoreCase(arrayTweedeVluchten.get(e).getD_Code())){
-                  arrayVluchten.add(arrayEersteVluchten.get(i));
-                  arrayVluchten.add(arrayTweedeVluchten.get(e)); 
+                  Flight[] flightArr = new Flight[2];
+                  flightArr[0] = arrayEersteVluchten.get(i);
+                  flightArr[1] = arrayTweedeVluchten.get(e);
+                  arrayVluchten.add(flightArr);
               }
           }
       }
       
-      ArrayList<Flight> transferVluchten = tijdControle(arrayVluchten);
+      ArrayList<Flight[]> transferVluchten = tijdControle(arrayVluchten);
       
       return  transferVluchten;
     
   } 
   
+
+  /** Vanaf hieronder: sorteeralgoritmen 
+  
+  */
+  
+  public static int getCO2(ArrayList<Flight[]> lijst){
+      
+  }
+  
+
   
 /* Vanaf hieronder vindt u de hulpmethoden voor de methode getTransferFlight. We gaan er in ons model vanuit dat er
    maar 1 transfer kan plaatsvinden.
@@ -145,7 +159,7 @@ public class DBFlight {
     
   }
   
-  // Via deze methode wordt de tijd van de datum gescheiden, zodat alleen de datum overblijft.
+  // Via deze methode wordt de tijd van de datum gescheiden, zodat alleen de datum overblijft. + in juiste vorm voor SQL
   public static String getDateTime(String date){
       String a = Character.toString(date.charAt(0));
       String b = Character.toString(date.charAt(1));
@@ -256,18 +270,17 @@ public class DBFlight {
   /* In deze methode controleren we of de reiziger voldoende tijd heeft om over te stappen in de 
      tussenstop. We nemen een marge van 30 minuten.
   */
-  public static ArrayList<Flight> tijdControle(ArrayList<Flight> arrayVluchten) throws ParseException{
-      ArrayList<Flight> HaalbareFlights = new ArrayList<>();
-      for(int i = 0; i < arrayVluchten.size(); i += 2){
+  public static ArrayList<Flight[]> tijdControle(ArrayList<Flight[]> arrayVluchten) throws ParseException{
+      ArrayList<Flight[]> HaalbareFlights = new ArrayList<>();
+      for(int i = 0; i < arrayVluchten.size(); i += 1){
               SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
-              Date date1 = format.parse(arrayVluchten.get(i).getArrivalDateTime().substring(10));
-              Date date2 = format.parse(arrayVluchten.get(i+1).getDepDateTime().substring(10));
+              Date date1 = format.parse(arrayVluchten.get(i)[0].getArrivalDateTime().substring(10));
+              Date date2 = format.parse(arrayVluchten.get(i)[1].getDepDateTime().substring(10));
               long difference = date2.getTime() - date1.getTime();
               //de output van difference is in milliseconden, 1 800 000 milliseconden zijn 30 minuten,
               //dit nemen we als minimumtijd die je nodig hebt om over te stappen.
               if(difference >= 1800000){
                   HaalbareFlights.add(arrayVluchten.get(i));
-                  HaalbareFlights.add(arrayVluchten.get(i+1));
               }
       }
       return HaalbareFlights; 
@@ -288,12 +301,25 @@ public class DBFlight {
         System.out.println(test2.get(0).getA_Code()); */
         
         
-        ArrayList<Flight> test = getTransferFlight("brussels", "london", "23/11/2019");
-          System.out.println(test);
-        /*System.out.println(test.get(0).getD_Code() + test.get(0).getD_Code()); 
-        System.out.println(test.get(0).getA_Code()); 
-        System.out.println(test.get(1).getD_Code()); 
-        System.out.println(test.get(1).getA_Code());*/ 
+        ArrayList<Flight[]> test = getTransferFlights("brussels", "london", "23/11/2019");
+          System.out.println("optie 1");
+          System.out.println("vlucht 1");
+        System.out.println(test.get(0)[0].getD_Code());
+        System.out.println(test.get(0)[0].getA_Code()); 
+        System.out.println(test.get(0)[0].getICAO()); 
+          System.out.println("vlucht2");
+        System.out.println(test.get(0)[1].getD_Code());
+        System.out.println(test.get(0)[1].getA_Code()); 
+        System.out.println(test.get(0)[1].getICAO()); 
+        /* System.out.println("optie2");
+            System.out.println("vlucht1");
+        System.out.println(test.get(1)[0].getD_Code()); 
+        System.out.println(test.get(1)[0].getA_Code()); 
+        System.out.println(test.get(1)[0].getICAO()); 
+            System.out.println("vlucht2");
+        System.out.println(test.get(1)[1].getD_Code()); 
+        System.out.println(test.get(1)[1].getA_Code()); 
+        System.out.println(test.get(1)[1].getICAO()); */
         
     
     } 
