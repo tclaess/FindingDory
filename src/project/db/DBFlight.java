@@ -190,8 +190,8 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
     ArrayList<Flight[]> transferVluchten = new ArrayList<>();
     ArrayList<Flight[]> gesorteerdeVluchten = new ArrayList<>();
     
-    singleVluchten = getSingleFlights(dAirport, aAirport, depDate);
-    transferVluchten = getTransferFlights(dAirport, aAirport, depDate);
+    singleVluchten = getFlights(dAirport, aAirport, depDate).get(0);
+    transferVluchten = getFlights(dAirport, aAirport, depDate).get(1);
     try {
     con = DBConnector.getConnection();
     Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -206,6 +206,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
          
         ResultSet rs = stmt.executeQuery(sql);
         String price;
+        while(rs.next()){
         price = rs.getString("PRICE");
         
         for(int e = 0; e < hulpArray.size(); e++)
@@ -221,6 +222,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
               hulpArray.add(price);
               gesorteerdeVluchten.add(singleVluchten.get(i));
               }
+        }
     }
 
     
@@ -230,36 +232,46 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
       
          String sql1 = "SELECT PRICE "
 	+ "FROM PRICE "
-	+ "WHERE FLIGHTNR = '" + singleVluchten.get(o)[0].getFlightNr() + "' AND FLIGHTCLASS = 'ECONOMY'" ;
+	+ "WHERE FLIGHTNR = '" + transferVluchten.get(o)[0].getFlightNr() + "'"
+        + "OR FLIGHTNR = '" + transferVluchten.get(o)[1].getFlightNr() + "'"
+        + "AND FLIGHTCLASS = 'ECONOMY'" ;
          
-          String sql2 = "SELECT PRICE "
+          /*String sql2 = "SELECT PRICE "
 	+ "FROM PRICE "
-	+ "WHERE FLIGHTNR = '" + singleVluchten.get(o)[1].getFlightNr() + "' AND FLIGHTCLASS = 'ECONOMY'" ;
+	+ "WHERE FLIGHTNR = '" + transferVluchten.get(o)[1].getFlightNr() + "' AND FLIGHTCLASS = 'ECONOMY'" ;*/
          
-        ResultSet rs1 = stmt.executeQuery(sql1);
-        ResultSet rs2 = stmt.executeQuery(sql2);
-        String priceVlucht1;
-        String priceVlucht2;
-        priceVlucht1 = rs1.getString("PRICE");
-        priceVlucht2 = rs2.getString("PRICE");
+       
+        ResultSet rs = stmt.executeQuery(sql1);
         
+        String[] priceVlucht = new String[2];
         
+        for(int s = 0; s < 2; s++){
+        rs.next();   
+        priceVlucht[s] = rs.getString("PRICE");
         
-        String volledigePrice = priceVlucht1 + priceVlucht2;
+        }
         
-       for(int a = 0; a > hulpArray.size(); a++)
+        System.out.println(priceVlucht[0]);
+        System.out.println(priceVlucht[1]);
+        //if(priceVlucht[0] != null && priceVlucht[1] != null){
+       
+        double volledigePrice = Double.parseDouble(priceVlucht[0]) + Double.parseDouble(priceVlucht[1]);
+        System.out.println(volledigePrice);
+        
+       for(int a = 0; a < hulpArray.size(); a++)
        {
-           if(Double.parseDouble(volledigePrice) < Double.parseDouble(hulpArray.get(a)))
+           if(volledigePrice < Double.parseDouble(hulpArray.get(a)))
             {
-                hulpArray.add(a,volledigePrice);
+                hulpArray.add(a,Double.toString(volledigePrice));
                 gesorteerdeVluchten.add(a, transferVluchten.get(o));
                 break;
             }
-            if(hulpArray.contains(volledigePrice) == false && gesorteerdeVluchten.contains(transferVluchten.get(o)) == false){
-              hulpArray.add(volledigePrice);
+            if(hulpArray.contains(Double.toString(volledigePrice)) == false && gesorteerdeVluchten.contains(transferVluchten.get(o)) == false){
+              hulpArray.add(Double.toString(volledigePrice));
               gesorteerdeVluchten.add(transferVluchten.get(o));
               }
        }
+        
     }
     DBConnector.closeConnection(con);
     
