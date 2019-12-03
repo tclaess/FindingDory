@@ -285,7 +285,76 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
 
   return gesorteerdeVluchten;   
 }
-  
+
+/* In deze methode ordenen we alle vluchten van korste naar langste duration
+  */
+
+ public static ArrayList<Flight[]> sortDuration(String dAirport, String aAirport, String depDate) throws DBException, ParseException{
+      Connection con = null;
+      
+      
+      String D_Code = getCode(dAirport);
+      String A_Code = getCode(aAirport);
+      String Correct_depDate = getDateTime(depDate);
+      
+      ArrayList<Double> hulpArray = new ArrayList<>();
+      ArrayList<Flight[]> gesorteerdeFlights= new ArrayList<>();
+      
+      ArrayList<ArrayList<Flight[]>> alleVluchten = new  ArrayList<>();
+      ArrayList<Flight[]> singleVluchten = new  ArrayList<>();
+      ArrayList<Flight[]> transferVluchten = new  ArrayList<>();
+      alleVluchten = getFlights(dAirport, aAirport, depDate);
+      singleVluchten = getFlights(dAirport, aAirport, depDate).get(0);
+      transferVluchten = getFlights(dAirport, aAirport, depDate).get(1);
+      
+      
+      for(int i = 0; i < singleVluchten.size(); i++){
+              String departureTime = singleVluchten.get(i)[0].getDepDateTime();
+              String arrivalTime = singleVluchten.get(i)[0].getArrivalDateTime();
+              Double duration = DBFlight.timeDifference(departureTime, arrivalTime);
+              //System.out.println(duration/3600000);              
+              //ArrayList<Flight> flight = new ArrayList<>(1);
+              //flight.add(singleVluchten.get(i));
+              for(int o = 0; o < hulpArray.size(); o++){
+                  if(duration < hulpArray.get(o)){
+                      hulpArray.add(o, duration);
+                      gesorteerdeFlights.add(o, singleVluchten.get(i));
+                      break;
+                  }         
+          }
+              if(hulpArray.contains(duration) == false && gesorteerdeFlights.contains(singleVluchten.get(i)) == false){
+              hulpArray.add(duration);
+              gesorteerdeFlights.add(singleVluchten.get(i));
+              }
+      }
+      
+      for(int i = 0; i < transferVluchten.size(); i++){
+          String departureTimeVlucht1 = transferVluchten.get(i)[0].getDepDateTime();
+          String arrivalTimeVlucht1 = transferVluchten.get(i)[0].getArrivalDateTime();
+          String departureTimeVlucht2 = transferVluchten.get(i)[1].getDepDateTime();
+          String arrivalTimeVlucht2 = transferVluchten.get(i)[1].getArrivalDateTime();
+          
+          Double duration1 = DBFlight.timeDifference(departureTimeVlucht1, arrivalTimeVlucht1);
+          Double duration2 = DBFlight.timeDifference(departureTimeVlucht2, arrivalTimeVlucht2);
+          Double totalDuration = duration1 + duration2;
+          //System.out.println(totalDuration/3600000);
+          
+              for(int o = 0; o < hulpArray.size(); o++){
+                  if(totalDuration < hulpArray.get(o)){
+                      hulpArray.add(o,totalDuration);
+                      gesorteerdeFlights.add(o, transferVluchten.get(i));
+                      break;
+                  }
+              }
+              if(hulpArray.contains(totalDuration) == false && gesorteerdeFlights.contains(transferVluchten.get(i)) == false){
+              hulpArray.add(totalDuration);
+              gesorteerdeFlights.add(transferVluchten.get(i));
+              }
+      } 
+        return gesorteerdeFlights;
+      
+  }
+
 
 /* Vanaf hieronder vindt u de hulpmethoden voor de methode getTransferFlight. We gaan er in ons model vanuit dat er
    maar 1 transfer kan plaatsvinden.
@@ -453,7 +522,67 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
       }
       return HaalbareFlights; 
   }
+   
+  /* In deze methode berekenen we het verschil in milliseconden tussen twee data; We moeten het formaat nog wel omzetten
+  om zo de SimpleDateFormat klasse te kunnen gebruiken
+  */
   
+  public static double timeDifference(String newStart, String newEinde) throws ParseException
+  {
+      String start = newStart;
+      String einde = newEinde;
+      
+      String a = Character.toString(start.charAt(0));
+      String b = Character.toString(start.charAt(1));
+      String c = Character.toString(start.charAt(2));
+      String d = Character.toString(start.charAt(3));
+      String e = Character.toString(start.charAt(5));
+      String f = Character.toString(start.charAt(6));
+      String g = Character.toString(start.charAt(8));
+      String h = Character.toString(start.charAt(9));
+      String i = Character.toString(start.charAt(11));
+      String j = Character.toString(start.charAt(12));
+      String k = Character.toString(start.charAt(14));
+      String l = Character.toString(start.charAt(15));
+      String m = Character.toString(start.charAt(17));  
+      String n = Character.toString(start.charAt(18));
+       
+      String a1 = Character.toString(einde.charAt(0));
+      String b1 = Character.toString(einde.charAt(1));
+      String c1 = Character.toString(einde.charAt(2));
+      String d1 = Character.toString(einde.charAt(3));
+      String e1 = Character.toString(einde.charAt(5));
+      String f1 = Character.toString(einde.charAt(6));
+      String g1 = Character.toString(einde.charAt(8));
+      String h1 = Character.toString(einde.charAt(9));
+      String i1 = Character.toString(einde.charAt(11));
+      String j1 = Character.toString(einde.charAt(12));
+      String k1 = Character.toString(einde.charAt(14));
+      String l1 = Character.toString(einde.charAt(15));
+      String m1 = Character.toString(einde.charAt(17));  
+      String n1 = Character.toString(einde.charAt(18));
+      
+      
+      String juisteStart = e+f+ "/" +g+h+ "/" +a+b+c+d+ " " + i+j + ":" +k+l +":" + m+n;
+      String juisteEinde = e1+f1+ "/" +g1+h1+ "/" +a1+b1+c1+d1+ " " + i1+j1 + ":" +k1+l1 +":" + m1+n1;
+      
+      /* String dateStart = "01/14/2012 09:29:58";
+        String dateStop = "01/15/2012 10:31:48";*/
+
+      SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+
+      Date dt1 = null;
+      Date dt2 = null;
+      
+      dt1 = format.parse(juisteStart);
+      dt2 = format.parse(juisteEinde);
+
+      //in milliseconds
+      double difference = dt2.getTime() - dt1.getTime();
+      return difference;
+       } 
+  
+ 
   
   /* Deze methode geeft een mooie output wee voor een ArrayList van Flight[] */ 
       public static String toString(ArrayList<Flight[]> flights) {
@@ -498,7 +627,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
         }
         return output;
     } 
-
+      
  
   // main 
   public static void main(String args[]) throws ParseException{
@@ -514,8 +643,14 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
         ArrayList<Flight> test2 = hulpMethode2(getCode("new york"));
         System.out.println(test2.get(0).getA_Code()); */
         
-        ArrayList<Flight[]> test = sortPrice("brussels", "london", "23/11/2019");
+        ArrayList<Flight[]> test = sortDuration("new york", "london", "23/11/2019");
           System.out.println(toString(test));
+       
+       
+       /* String dateStart = "01/14/2012 09:29:58";
+        String dateStop = "01/15/2012 10:31:48";
+        System.out.println(DBFlight.timeDifference(dateStart, dateStop)/3600000);*/
+          
           
           
        /* ArrayList<Flight[]> test = getTransferFlights("brussels", "london", "23/11/2019");
@@ -544,7 +679,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
        System.out.println("e.getMessage");
         // Logger.getLogger(DBBooking.class.getName()).log(Level.SEVERE, null, ex);
      } 
-      
+     
       
   }
-}
+
