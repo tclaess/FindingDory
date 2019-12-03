@@ -178,7 +178,110 @@ public static ArrayList<Flight[]> sortCarbonDio(String dAirport, String aAirport
         return gesorteerdeFlights;
       
   }
+
+public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, String depDate) throws DBException, ParseException{
+    Connection con = null;
+    String D_Code = getCode(dAirport);
+    String A_Code = getCode(aAirport);
+    String Correct_depDate = getDateTime(depDate);
+   
+    ArrayList<String> hulpArray = new ArrayList<>();
+    ArrayList<Flight[]> singleVluchten = new ArrayList<>();
+    ArrayList<Flight[]> transferVluchten = new ArrayList<>();
+    ArrayList<Flight[]> gesorteerdeVluchten = new ArrayList<>();
+    
+    singleVluchten = getSingleFlights(dAirport, aAirport, depDate);
+    transferVluchten = getTransferFlights(dAirport, aAirport, depDate);
+    try {
+    con = DBConnector.getConnection();
+    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+      
+    for(int i = 0; i < singleVluchten.size(); i++)
+    {
+        // price eruithalen voor deze vlucht
+      
+         String sql = "SELECT PRICE "
+	+ "FROM PRICE "
+	+ "WHERE FLIGHTNR = '" + singleVluchten.get(i)[0].getFlightNr() + "' AND FLIGHTCLASS = 'ECONOMY' '" ;
+         
+        ResultSet rs = stmt.executeQuery(sql);
+        String price;
+        price = rs.getString("PRICE");
+        
+        
+        
+        for(int e = 0; e < hulpArray.size(); e++)
+        {
+            if(Double.parseDouble(price) < Double.parseDouble(hulpArray.get(e)))
+            {
+                hulpArray.add(e,price);
+                gesorteerdeVluchten.add(e, singleVluchten.get(i));
+                break;
+            } 
+        } 
+        if(hulpArray.contains(price) == false && gesorteerdeVluchten.contains(singleVluchten.get(i)) == false){
+              hulpArray.add(price);
+              gesorteerdeVluchten.add(singleVluchten.get(i));
+              }
+    }
+     DBConnector.closeConnection(con);  
+    
+    for(int o = 0; o < transferVluchten.size(); o++)
+    {
+      // price eruithalen voor deze vlucht
+      
+         String sql1 = "SELECT PRICE "
+	+ "FROM PRICE "
+	+ "WHERE FLIGHTNR = '" + singleVluchten.get(o)[0].getFlightNr() + "' AND FLIGHTCLASS = ECONOMY '" ;
+         
+          String sql2 = "SELECT PRICE "
+	+ "FROM PRICE "
+	+ "WHERE FLIGHTNR = '" + singleVluchten.get(o)[1].getFlightNr() + "' AND FLIGHTCLASS = ECONOMY '" ;
+         
+        ResultSet rs1 = stmt.executeQuery(sql1);
+        ResultSet rs2 = stmt.executeQuery(sql2);
+        String priceVlucht1;
+        String priceVlucht2;
+        priceVlucht1 = rs1.getString("PRICE");
+        priceVlucht2 = rs2.getString("PRICE");
+        
+        
+        
+        String volledigePrice = priceVlucht1 + priceVlucht2;
+        
+       for(int a = 0; a > hulpArray.size(); a++)
+       {
+           if(Double.compare(Double.parseDouble(volledigePrice), Double.parseDouble(hulpArray.get(a))) == 0)
+            {
+                hulpArray.add(a,volledigePrice);
+                gesorteerdeVluchten.add(a, transferVluchten.get(o));
+                break;
+            }
+            if(Double.compare(Double.parseDouble(volledigePrice), Double.parseDouble(hulpArray.get(a))) < 0)
+            {
+                hulpArray.add(a,volledigePrice);
+                gesorteerdeVluchten.add(singleVluchten.get(o));
+                break;
+            }
+            if(Double.compare(Double.parseDouble(volledigePrice), Double.parseDouble(hulpArray.get(a))) > 0)
+                hulpArray.add(volledigePrice);
+                gesorteerdeVluchten.add(singleVluchten.get(o));
+       }
+    }
+    DBConnector.closeConnection(con);
+    
+    } 
+    
+    catch (Exception ex) {
+      ex.printStackTrace();
+      DBConnector.closeConnection(con);
+      throw new DBException(ex);
+    }
+
+  return gesorteerdeVluchten;   
+}
   
+
 /* Vanaf hieronder vindt u de hulpmethoden voor de methode getTransferFlight. We gaan er in ons model vanuit dat er
    maar 1 transfer kan plaatsvinden.
   */
@@ -360,7 +463,7 @@ public static ArrayList<Flight[]> sortCarbonDio(String dAirport, String aAirport
         ArrayList<Flight> test2 = hulpMethode2(getCode("new york"));
         System.out.println(test2.get(0).getA_Code()); */
         
-        ArrayList<Flight[]> test = sortCarbonDio("new york", "london", "23/11/2019");
+        ArrayList<Flight[]> test = sortPrice("new york", "london", "23/11/2019");
           System.out.println(test.get(0).length);
           System.out.println(test.get(1).length);
           System.out.println(test.get(2).length);
