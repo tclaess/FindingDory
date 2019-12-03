@@ -202,13 +202,11 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
       
          String sql = "SELECT PRICE "
 	+ "FROM PRICE "
-	+ "WHERE FLIGHTNR = '" + singleVluchten.get(i)[0].getFlightNr() + "' AND FLIGHTCLASS = 'ECONOMY' '" ;
+	+ "WHERE FLIGHTNR = '" + singleVluchten.get(i)[0].getFlightNr() + "' AND FLIGHTCLASS = 'ECONOMY' " ;
          
         ResultSet rs = stmt.executeQuery(sql);
         String price;
         price = rs.getString("PRICE");
-        
-        
         
         for(int e = 0; e < hulpArray.size(); e++)
         {
@@ -224,7 +222,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
               gesorteerdeVluchten.add(singleVluchten.get(i));
               }
     }
-     DBConnector.closeConnection(con);  
+
     
     for(int o = 0; o < transferVluchten.size(); o++)
     {
@@ -232,11 +230,11 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
       
          String sql1 = "SELECT PRICE "
 	+ "FROM PRICE "
-	+ "WHERE FLIGHTNR = '" + singleVluchten.get(o)[0].getFlightNr() + "' AND FLIGHTCLASS = ECONOMY '" ;
+	+ "WHERE FLIGHTNR = '" + singleVluchten.get(o)[0].getFlightNr() + "' AND FLIGHTCLASS = 'ECONOMY'" ;
          
           String sql2 = "SELECT PRICE "
 	+ "FROM PRICE "
-	+ "WHERE FLIGHTNR = '" + singleVluchten.get(o)[1].getFlightNr() + "' AND FLIGHTCLASS = ECONOMY '" ;
+	+ "WHERE FLIGHTNR = '" + singleVluchten.get(o)[1].getFlightNr() + "' AND FLIGHTCLASS = 'ECONOMY'" ;
          
         ResultSet rs1 = stmt.executeQuery(sql1);
         ResultSet rs2 = stmt.executeQuery(sql2);
@@ -251,21 +249,16 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
         
        for(int a = 0; a > hulpArray.size(); a++)
        {
-           if(Double.compare(Double.parseDouble(volledigePrice), Double.parseDouble(hulpArray.get(a))) == 0)
+           if(Double.parseDouble(volledigePrice) < Double.parseDouble(hulpArray.get(a)))
             {
                 hulpArray.add(a,volledigePrice);
                 gesorteerdeVluchten.add(a, transferVluchten.get(o));
                 break;
             }
-            if(Double.compare(Double.parseDouble(volledigePrice), Double.parseDouble(hulpArray.get(a))) < 0)
-            {
-                hulpArray.add(a,volledigePrice);
-                gesorteerdeVluchten.add(singleVluchten.get(o));
-                break;
-            }
-            if(Double.compare(Double.parseDouble(volledigePrice), Double.parseDouble(hulpArray.get(a))) > 0)
-                hulpArray.add(volledigePrice);
-                gesorteerdeVluchten.add(singleVluchten.get(o));
+            if(hulpArray.contains(volledigePrice) == false && gesorteerdeVluchten.contains(transferVluchten.get(o)) == false){
+              hulpArray.add(volledigePrice);
+              gesorteerdeVluchten.add(transferVluchten.get(o));
+              }
        }
     }
     DBConnector.closeConnection(con);
@@ -509,7 +502,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
         ArrayList<Flight> test2 = hulpMethode2(getCode("new york"));
         System.out.println(test2.get(0).getA_Code()); */
         
-        ArrayList<Flight[]> test = sortCarbonDio("brussels", "new york", "23/11/2019");
+        ArrayList<Flight[]> test = sortPrice("brussels", "london", "23/11/2019");
           System.out.println(toString(test));
           
           
