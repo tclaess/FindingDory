@@ -448,7 +448,53 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
       }
       return HaalbareFlights; 
   }
+  
+  
+  /* Deze methode geeft een mooie output wee voor een ArrayList van Flight[] */ 
+      public static String toString(ArrayList<Flight[]> flights) {
+        String output = "";
+        for(int i = 0; i < flights.size(); i++){
+            if(flights.get(i).length == 1){
+                output = output.concat("Single Flight: \n"
+                        + "    flightNr= " + flights.get(i)[0].getFlightNr() + "\n" 
+                        + "    depDateTime= " + flights.get(i)[0].getDepDateTime() + "\n"  
+                        + "    arrivalDateTime= " + flights.get(i)[0].getArrivalDateTime() + "\n"  
+                        + "    carbondio= " + flights.get(i)[0].getCarbondio() + "\n"  
+                        + "    d_Code= " + flights.get(i)[0].getD_Code() + "\n"  
+                        + "    a_Code= " + flights.get(i)[0].getA_Code() + "\n"  
+                        + "    ICAO= " + flights.get(i)[0].getICAO()+ "\n"
+                        + " " + "\n" 
+                        + "------------------------------------ \n"
+                        + " " + "\n"); 
+            }
+            if(flights.get(i).length == 2){
+                output =  output.concat("Transfer flight: \n"
+                        + "  Flight 1: "
+                        + "    flightNr= " + flights.get(i)[0].getFlightNr() + "\n" 
+                        + "    depDateTime= " + flights.get(i)[0].getDepDateTime() + "\n"  
+                        + "    arrivalDateTime= " + flights.get(i)[0].getArrivalDateTime() + "\n"  
+                        + "    carbondio= " + flights.get(i)[0].getCarbondio() + "\n"  
+                        + "    d_Code= " + flights.get(i)[0].getD_Code() + "\n"  
+                        + "    a_Code= " + flights.get(i)[0].getA_Code() + "\n"  
+                        + "    ICAO= " + flights.get(i)[0].getICAO()+ "\n"
+                        + " " + "\n"
+                        + "  Flight 2: "
+                        + "    flightNr= " + flights.get(i)[1].getFlightNr() + "\n" 
+                        + "    depDateTime= " + flights.get(i)[1].getDepDateTime() + "\n"  
+                        + "    arrivalDateTime= " + flights.get(i)[1].getArrivalDateTime() + "\n"  
+                        + "    carbondio= " + flights.get(i)[1].getCarbondio() + "\n"  
+                        + "    d_Code= " + flights.get(i)[1].getD_Code() + "\n"  
+                        + "    a_Code= " + flights.get(i)[1].getA_Code() + "\n"  
+                        + "    ICAO= " + flights.get(i)[1].getICAO()+ "\n"
+                        + " " + "\n" 
+                        + "------------------------------------ \n"
+                        + " " + "\n");
+            }
+        }
+        return output;
+    } 
 
+ 
   // main 
   public static void main(String args[]) throws ParseException{
       
@@ -463,11 +509,8 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
         ArrayList<Flight> test2 = hulpMethode2(getCode("new york"));
         System.out.println(test2.get(0).getA_Code()); */
         
-        ArrayList<Flight[]> test = sortPrice("new york", "london", "23/11/2019");
-          System.out.println(test.get(0).length);
-          System.out.println(test.get(1).length);
-          System.out.println(test.get(2).length);
-          System.out.println(test.get(3).length);
+        ArrayList<Flight[]> test = sortCarbonDio("brussels", "new york", "23/11/2019");
+          System.out.println(toString(test));
           
           
        /* ArrayList<Flight[]> test = getTransferFlights("brussels", "london", "23/11/2019");
