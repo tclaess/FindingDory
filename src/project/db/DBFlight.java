@@ -585,7 +585,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
  
   
   /* Deze methode geeft een mooie output wee voor een ArrayList van Flight[] */ 
-      public static String toString(ArrayList<Flight[]> flights) {
+      public static String toString1(ArrayList<Flight[]> flights) {
           Connection con = null;
           String output = "";
           try {
@@ -807,7 +807,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
                                 + "    PRICE First Class= " + priceFirst1+ "\n"
                                 + " " + "\n"
                                 + "  Total price: \n "
-                                + "    PRICE Economy= " + totalEco+ "\n"
+                                + "   PRICE Economy= " + totalEco+ "\n"
                                 + "    PRICE Business= " + totalBuss+ "\n"
                                 + "    PRICE First Class= " + totalFirst+ "\n"
                                 + " " + "\n"
@@ -826,9 +826,13 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
     }
 }
     
-    /* public static String toString(ArrayList<ArrayList<Flight[]>> totalFlights) {
-        
-    } */ 
+    public static String toString2(ArrayList<ArrayList<Flight[]>> totalFlights) {
+        String output = "";
+        for(int i = 0; i < totalFlights.size(); i++){
+            output = output.concat(toString(totalFlights.get(i)));
+        }
+        return output;
+    }  
       
  
   // main 
@@ -846,7 +850,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
         System.out.println(test2.get(0).getA_Code()); */
         
         ArrayList<ArrayList<Flight[]>> test = getFlights("new york", "london", "23/11/2019");
-          System.out.println(toString(test.get(0)) + toString(test.get(1)));
+          System.out.println(toString2(test));
        
        
        /* String dateStart = "01/14/2012 09:29:58";
