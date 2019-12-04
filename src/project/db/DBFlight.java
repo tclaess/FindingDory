@@ -250,13 +250,9 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
         priceVlucht[s] = rs.getString("PRICE");
         
         }
-        
-        System.out.println(priceVlucht[0]);
-        System.out.println(priceVlucht[1]);
-        //if(priceVlucht[0] != null && priceVlucht[1] != null){
        
         double volledigePrice = Double.parseDouble(priceVlucht[0]) + Double.parseDouble(priceVlucht[1]);
-        System.out.println(volledigePrice);
+      
         
        for(int a = 0; a < hulpArray.size(); a++)
        {
@@ -851,8 +847,8 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
         ArrayList<Flight> test2 = hulpMethode2(getCode("new york"));
         System.out.println(test2.get(0).getA_Code()); */
         
-        ArrayList<ArrayList<Flight[]>> test = getFlights("new york", "london", "23/11/2019");
-          System.out.println(toString2(test));
+        ArrayList<Flight[]> test = sortPrice("new york", "london", "23/11/2019");
+          System.out.println(toString1(test));
        
        
        /* String dateStart = "01/14/2012 09:29:58";
