@@ -44,14 +44,20 @@ public class DBBooking {
     }
     }
   
-    public static void createBooking() throws DBException{
+    public static void createBooking(Booking b) throws DBException{
       Connection con = null;
       try {
          con = DBConnector.getConnection();
          Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
          
-        
-         
+         // INSERT
+	String sql = "INSERT into BOOKING "
+                + "(BOOKNR, BOOKDATE) "
+		+ "VALUES ('" + b.getBookNr()
+                + "', '" + b.getBookDate();
+        stmt.executeUpdate(sql);
+
+      DBConnector.closeConnection(con);
       }
       catch (DBException dbe) {
       dbe.printStackTrace();

@@ -584,7 +584,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
   
  
   
-  /* Deze methode geeft een mooie output wee voor een ArrayList van Flight[] */ 
+  /* Deze methode geeft een mooie output weer voor een ArrayList van Flight[] */ 
       public static String toString1(ArrayList<Flight[]> flights) {
           Connection con = null;
           String output = "";
@@ -782,7 +782,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
                         
                                  
                         output =  output.concat("Transfer flight: \n"
-                                + "  Flight 1: "
+                                + "  Flight 1: \n"
                                 + "    flightNr= " + flights.get(i)[0].getFlightNr() + "\n" 
                                 + "    depDateTime= " + flights.get(i)[0].getDepDateTime() + "\n"  
                                 + "    arrivalDateTime= " + flights.get(i)[0].getArrivalDateTime() + "\n"  
@@ -790,11 +790,12 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
                                 + "    d_Code= " + flights.get(i)[0].getD_Code() + "\n"  
                                 + "    a_Code= " + flights.get(i)[0].getA_Code() + "\n"  
                                 + "    ICAO= " + flights.get(i)[0].getICAO()+ "\n"
+                                + " " + "\n"
                                 + "    PRICE Economy= " + priceEco+ "\n"
                                 + "    PRICE Business= " + priceBuss+ "\n"
                                 + "    PRICE First Class= " + priceFirst+ "\n"        
                                 + " " + "\n"
-                                + "  Flight 2: "
+                                + "  Flight 2: \n"
                                 + "    flightNr= " + flights.get(i)[1].getFlightNr() + "\n" 
                                 + "    depDateTime= " + flights.get(i)[1].getDepDateTime() + "\n"  
                                 + "    arrivalDateTime= " + flights.get(i)[1].getArrivalDateTime() + "\n"  
@@ -802,6 +803,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
                                 + "    d_Code= " + flights.get(i)[1].getD_Code() + "\n"  
                                 + "    a_Code= " + flights.get(i)[1].getA_Code() + "\n"  
                                 + "    ICAO= " + flights.get(i)[1].getICAO()+ "\n"
+                                + " " + "\n"
                                 + "    PRICE Economy= " + priceEco1+ "\n"
                                 + "    PRICE Business= " + priceBuss1+ "\n"
                                 + "    PRICE First Class= " + priceFirst1+ "\n"
@@ -829,7 +831,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
     public static String toString2(ArrayList<ArrayList<Flight[]>> totalFlights) {
         String output = "";
         for(int i = 0; i < totalFlights.size(); i++){
-            output = output.concat(toString(totalFlights.get(i)));
+            output = output.concat(toString1(totalFlights.get(i)));
         }
         return output;
     }  
