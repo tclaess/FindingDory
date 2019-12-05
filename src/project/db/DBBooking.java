@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -89,6 +90,7 @@ public class DBBooking {
                 + "', '" + b.getBookDate() + "')";
         stmt.executeUpdate(sql1);
         
+        //  INSERT INTO BOOKINGS
         String sql2 = "INSERT into BOOKINGS "
                 + "(ID, COUNTRY, BOOKNR) "
                 + "VALUES ('" + c.getID()
@@ -96,6 +98,7 @@ public class DBBooking {
                 + "', '" + b.getBookNr() + "')";
         stmt.executeUpdate(sql2);
         
+        // INSERT INTO FLIGHTLINE
         if(f.size() == 1){
         String sql3 = "INSERT into FLIGHT_LINE "
                 + "(BOOKNR, FLIGHTNR, DEPDATETIME) "
@@ -105,7 +108,7 @@ public class DBBooking {
         stmt.executeUpdate(sql3);
         }
         
-        /*else{
+        else{
               String sql3 = "INSERT into FLIGHT_LINE "
                 + "(BOOKNR, FLIGHTNR, DEPDATETIME) "
                 + "VALUES ('" + b.getBookNr()
@@ -119,7 +122,8 @@ public class DBBooking {
                 + "', '" + f.get(0)[1].getFlightNr()
                 + "', '" + f.get(0)[1].getDepDateTime() + "')";
               stmt.executeUpdate(sql4);
-        }*/
+        }
+        
       DBConnector.closeConnection(con);
       }
       catch (DBException dbe) {
@@ -222,14 +226,14 @@ public class DBBooking {
      
     }
     // main 
-  public static void main(String args[]){
+  public static void main(String args[]) throws ParseException{
       
       try {
           //Booking booking = new Booking("4321", "2019-12-05");
           //DBBooking.deleteBooking(booking);
           Customer c = DBCustomer.getCustomer("G32019S2", "Belgium");
-          Booking b = new Booking("965664", "2019-12-05");
-          ArrayList<Flight[]> f = DBFlight.getSingleFlights("brussels", "london", "23/11/2019");
+          Booking b = new Booking("9656", "2019-12-05");
+          ArrayList<Flight[]> f = DBFlight.getTransferFlights("brussels", "new york", "23/11/2019");
           DBBooking.createBooking(c, b, f);
           
                   
