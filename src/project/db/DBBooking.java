@@ -231,6 +231,7 @@ public class DBBooking {
           Booking b = new Booking("965664", "2019-12-05");
           ArrayList<Flight[]> f = DBFlight.getSingleFlights("brussels", "london", "23/11/2019");
           DBBooking.createBooking(c, b, f);
+          System.out.println("sdfsdfsdfsdfs");
           
                   
           
