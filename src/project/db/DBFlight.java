@@ -832,7 +832,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
   public static void main(String args[]) throws ParseException{
       
       try {
-        ArrayList<Flight[]> test = sortPrice("new york", "london", "23/11/2019");
+        ArrayList<Flight[]> test = sortPrice("brussels", "london", "23/11/2019");
           System.out.println(toString1(test));
     } 
     catch (DBException e) {
