@@ -54,7 +54,7 @@ public class DBBooking {
 	String sql = "INSERT into BOOKING "
                 + "(BOOKNR, BOOKDATE) "
 		+ "VALUES ('" + b.getBookNr()
-                + "', '" + b.getBookDate();
+                + "', '" + b.getBookDate() + "')";
         stmt.executeUpdate(sql);
 
       DBConnector.closeConnection(con);
@@ -71,7 +71,7 @@ public class DBBooking {
     }              
   }
     
-    public static Booking shortestBooking(Booking booking) throws DBException{
+    public static void shortestBooking(Booking booking) throws DBException{
        Connection con = null;
       try {
          con = DBConnector.getConnection();
@@ -90,10 +90,10 @@ public class DBBooking {
       DBConnector.closeConnection(con);
       throw new DBException(ex);
     }  
-      return;
+     
     } 
 
-    public static Booking leastTransfersBooking(Booking booking) throws DBException{
+    public static void leastTransfersBooking(Booking booking) throws DBException{
         Connection con = null;
       try {
          con = DBConnector.getConnection();
@@ -112,7 +112,7 @@ public class DBBooking {
       DBConnector.closeConnection(con);
       throw new DBException(ex);
     }  
-      return;
+    
     } 
     
 
@@ -137,7 +137,7 @@ public class DBBooking {
     }              
 }
     
-    public static Booking lowestCO2Booking(Booking booking) throws DBException{
+    public static void lowestCO2Booking(Booking booking) throws DBException{
         Connection con = null;
       try {
          con = DBConnector.getConnection();
@@ -156,34 +156,24 @@ public class DBBooking {
       DBConnector.closeConnection(con);
       throw new DBException(ex);
     }
-      return;
+     
     }
+    // main 
+  public static void main(String args[]){
+      
+      try {
+          Booking booking = new Booking("4321", "2019-12-05");
+          DBBooking.deleteBooking(booking);
+          
+    } 
+    catch (DBException e) {
+       System.out.println("e.getMessage");
+        // Logger.getLogger(DBBooking.class.getName()).log(Level.SEVERE, null, ex);
+     } 
+     
+      
+  }
 }
-  /*public static ArrayList<Customer> getGraduates() throws DBException {
-    Connection con = null;
-    try {
-      con = DBConnector.getConnection();
-      Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-      
-      String sql = "SELECT number "
-              + "FROM Students "
-              + "WHERE graduate=" + true;
-      ResultSet srs = stmt.executeQuery(sql);
-      
-      ArrayList<Customer> studenten = new ArrayList<Customer>();
-      while (srs.next())
-        studenten.add(getStudent(srs.getInt("number")));
-      DBConnector.closeConnection(con);
-      return studenten;
-    } catch (DBException dbe) {
-      dbe.printStackTrace();
-      DBConnector.closeConnection(con);
-      throw dbe;
-    } catch (Exception ex) {
-      ex.printStackTrace();
-      DBConnector.closeConnection(con);
-      throw new DBException(ex);
-    }              
-  }*/
+  
  
 

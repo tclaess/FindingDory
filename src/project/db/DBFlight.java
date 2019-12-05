@@ -235,12 +235,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
 	+ "WHERE FLIGHTNR = '" + transferVluchten.get(o)[0].getFlightNr() + "'"
         + "OR FLIGHTNR = '" + transferVluchten.get(o)[1].getFlightNr() + "'"
         + "AND FLIGHTCLASS = 'ECONOMY'" ;
-         
-          /*String sql2 = "SELECT PRICE "
-	+ "FROM PRICE "
-	+ "WHERE FLIGHTNR = '" + transferVluchten.get(o)[1].getFlightNr() + "' AND FLIGHTCLASS = 'ECONOMY'" ;*/
-         
-       
+  
         ResultSet rs = stmt.executeQuery(sql1);
         
         String[] priceVlucht = new String[2];
@@ -837,47 +832,8 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
   public static void main(String args[]) throws ParseException{
       
       try {
-      
-          
-        /* String test = getCode("brussels");
-            System.out.println(test);  */ 
-        
-        /* Flight flight = getTransferFlight("london", "brussels", "22/11/2019");
-          System.out.println(flight.getArrivalDateTime()); 
-        ArrayList<Flight> test2 = hulpMethode2(getCode("new york"));
-        System.out.println(test2.get(0).getA_Code()); */
-        
         ArrayList<Flight[]> test = sortPrice("new york", "london", "23/11/2019");
           System.out.println(toString1(test));
-       
-       
-       /* String dateStart = "01/14/2012 09:29:58";
-        String dateStop = "01/15/2012 10:31:48";
-        System.out.println(DBFlight.timeDifference(dateStart, dateStop)/3600000);*/
-          
-          
-          
-       /* ArrayList<Flight[]> test = getTransferFlights("brussels", "london", "23/11/2019");
-          System.out.println("optie 1");
-          System.out.println("vlucht 1");
-        System.out.println(test.get(0)[0].getD_Code());
-        System.out.println(test.get(0)[0].getA_Code()); 
-        System.out.println(test.get(0)[0].getICAO()); 
-          System.out.println("vlucht2");
-        System.out.println(test.get(0)[1].getD_Code());
-        System.out.println(test.get(0)[1].getA_Code()); 
-        System.out.println(test.get(0)[1].getICAO()); */
-        /* System.out.println("optie2");
-            System.out.println("vlucht1");
-        System.out.println(test.get(1)[0].getD_Code()); 
-        System.out.println(test.get(1)[0].getA_Code()); 
-        System.out.println(test.get(1)[0].getICAO()); 
-            System.out.println("vlucht2");
-        System.out.println(test.get(1)[1].getD_Code()); 
-        System.out.println(test.get(1)[1].getA_Code()); 
-        System.out.println(test.get(1)[1].getICAO()); */
-        
-    
     } 
     catch (DBException e) {
        System.out.println("e.getMessage");
