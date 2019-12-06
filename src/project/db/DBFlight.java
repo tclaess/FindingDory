@@ -25,7 +25,7 @@ import java.util.Date;
  */
 public class DBFlight {
     
-  public static ArrayList<ArrayList<Flight[]>> getFlights(String dAirport, String aAirport, String depDate) throws DBException, ParseException {
+    public static ArrayList<ArrayList<Flight[]>> getFlights(String dAirport, String aAirport, String depDate) throws DBException, ParseException {
         ArrayList<Flight[]> singleFlights = getSingleFlights(dAirport, aAirport, depDate);
         ArrayList<Flight[]> transferFlights = getTransferFlights(dAirport, aAirport, depDate);
         ArrayList<ArrayList<Flight[]>> flights = new ArrayList();
@@ -106,17 +106,14 @@ public class DBFlight {
       
       return  transferVluchten;
     
-  } 
+  }
   
   
 
   /** Vanaf hieronder: sorteeralgoritmen 
   */
   
-  /*public static int getCO2(ArrayList<Flight[]> lijst){
-      
-  }*/
-  
+ 
 public static ArrayList<Flight[]> sortCarbonDio(String dAirport, String aAirport, String depDate) throws DBException, ParseException{
       Connection con = null;
       
@@ -498,6 +495,8 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
   /* In deze methode controleren we of de reiziger voldoende tijd heeft om over te stappen in de 
      tussenstop. We nemen een marge van 30 minuten.
   */
+  
+  
   public static ArrayList<Flight[]> tijdControle(ArrayList<Flight[]> arrayVluchten) throws ParseException{
       ArrayList<Flight[]> HaalbareFlights = new ArrayList<>();
       for(int i = 0; i < arrayVluchten.size(); i += 1){
@@ -513,6 +512,98 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
       }
       return HaalbareFlights; 
   }
+  
+  public static ArrayList<ArrayList<Flight>> getFlight(String dAirport, String aAirport, String depDate) throws DBException
+  {
+      Connection con = null;
+    try {
+      con = DBConnector.getConnection();
+      Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+      String D_Code = getCode(dAirport);
+      String A_Code = getCode(aAirport);
+      String Correct_depDate = getDateTime(depDate);
+      ArrayList<String> d_Codes = new ArrayList<>();
+      d_Codes.add(D_Code);
+      ArrayList<String> d_Codes2 = new ArrayList<>();
+      ArrayList<Flight> singleFlights = new ArrayList<>();
+      ArrayList<Flight> doubleFlights = new ArrayList<>();
+      ArrayList<Flight> tripleFlights = new ArrayList<>();
+      ArrayList<Flight> overigeFlights = new ArrayList<>();
+      ArrayList<Flight> overigeFlights2 = new ArrayList<>();
+      ArrayList<Flight[]> vluchten1 = new ArrayList<>();
+      ArrayList<Flight[]> vluchten2 = new ArrayList<>();
+      ArrayList<Flight[]> vluchten3 = new ArrayList<>();
+      ArrayList<ArrayList<Flight>> vluchten = new ArrayList<>();
+      ArrayList<Flight> realDoubleFlights = new ArrayList<>();
+      ArrayList<Flight> realTripleFlights = new ArrayList<>();
+      for(int i = 0; i < 3; i++){
+          for(int p = 0; p < d_Codes.size(); p++){
+            String sqlFlights = "SELECT * "
+              + "FROM FLIGHT "
+              + "WHERE D_CODE = '" + d_Codes.get(p) + "'" + "AND CAST(DEPDATETIME as DATE) = '" + Correct_depDate + "'";
+            
+            d_Codes.remove(p);
+            ResultSet rsFlights = stmt.executeQuery(sqlFlights);
+            String flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code;
+            
+            while(rsFlights.next())
+            {
+                flightNr = rsFlights.getString("FLIGHTNR");
+                depDateTime = rsFlights.getString("DEPDATETIME");
+                arrivalDateTime = rsFlights.getString("ARRIVALDATETIME");
+                carbondio = rsFlights.getString("CARBONDIO");
+                ICAO = rsFlights.getString("ICAO");
+                d_Code = rsFlights.getString("D_CODE");
+                a_Code = rsFlights.getString("A_CODE");
+                Flight flight = new Flight(flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code);
+
+                if(i == 0 && a_Code.equalsIgnoreCase(A_Code)){
+                    singleFlights.add(flight); 
+                }
+                else if(i == 0){
+                    overigeFlights.add(flight);
+                    d_Codes.add(p, a_Code);
+                }
+                else if(i == 1 && a_Code.equalsIgnoreCase(A_Code)){
+                    for(int r = 0; r < overigeFlights.size(); r++){
+                        if(overigeFlights.get(r).getA_Code().equalsIgnoreCase(d_Code)){
+                             doubleFlights.add(overigeFlights.get(r));
+                             doubleFlights.add(flight);
+                             realDoubleFlights = tijdControle(doubleFlights);
+                        }
+                    }
+                }
+                else if(i == 1){
+                    overigeFlights2.add(flight);
+                    d_Codes.add(p, a_Code);
+                }
+                else if(i == 2 && a_Code.equalsIgnoreCase(A_Code)){
+                    for(int r = 0; r < overigeFlights.size(); r++){
+                        for(int l = 0; l < overigeFlights2.size(); l++){
+                        if(overigeFlights.get(r).getA_Code().equalsIgnoreCase(overigeFlights2.get(l).getD_Code()) && overigeFlights2.get(l).getA_Code().equalsIgnoreCase(d_Code)){
+                            tripleFlights.add(overigeFlights.get(r));
+                            tripleFlights.add(overigeFlights2.get(l));
+                            tripleFlights.add(flight);
+                            //realTripleFlights = tijdControle(tripleFlights);
+                        }
+                    }
+                    }
+                }
+            }
+          }
+      }
+      DBConnector.closeConnection(con);
+      vluchten.add(singleFlights);
+      vluchten.add(realDoubleFlights);
+      vluchten.add(tripleFlights);
+      return vluchten;
+    }
+  catch (Exception ex) {
+      System.out.println("ex.getMessage");
+      DBConnector.closeConnection(con);
+      throw new DBException(ex);
+    }
+    }
    
   /* In deze methode berekenen we het verschil in milliseconden tussen twee data; We moeten het formaat nog wel omzetten
   om zo de SimpleDateFormat klasse te kunnen gebruiken
@@ -832,8 +923,8 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
   public static void main(String args[]) throws ParseException{
       
       try {
-        ArrayList<Flight[]> test = sortPrice("brussels", "london", "23/11/2019");
-          System.out.println(toString1(test));
+        ArrayList<ArrayList<Flight>> test = getFlight("brussels", "london", "23/11/2019");
+          System.out.println(test);
     } 
     catch (DBException e) {
        System.out.println("e.getMessage");
