@@ -38,6 +38,7 @@ public class OptiesKlantenController implements Initializable {
     private Button terugBtn;
     @FXML
     private Button klantRapportBtn;
+    @FXML
     private TextField klantInfoTxt;
     @FXML
     private TextField voornaamInfoTxt;
@@ -52,7 +53,6 @@ public class OptiesKlantenController implements Initializable {
     @FXML
     private TextField achternaamRapportTxt;
     
-    @FXML
     public void klantToevoegenBtnPushed(ActionEvent event) throws IOException
     {
         Parent klantToevoegenParent = FXMLLoader.load(getClass().getResource("/project/gui/KlantToevoegen.fxml"));
