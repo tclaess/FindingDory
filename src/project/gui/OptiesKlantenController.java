@@ -15,7 +15,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import project.logic.Agency;
 
 /**
  * FXML Controller class
@@ -24,6 +26,8 @@ import javafx.stage.Stage;
  */
 public class OptiesKlantenController implements Initializable {
 
+    private Agency model;
+    
     @FXML
     private Button klantToevoegenBtn;
     @FXML
@@ -34,6 +38,19 @@ public class OptiesKlantenController implements Initializable {
     private Button terugBtn;
     @FXML
     private Button klantRapportBtn;
+    private TextField klantInfoTxt;
+    @FXML
+    private TextField voornaamInfoTxt;
+    @FXML
+    private TextField voornaamUpdateTxt;
+    @FXML
+    private TextField voornaamRapportTxt;
+    @FXML
+    private TextField achternaamInfoTxt;
+    @FXML
+    private TextField achternaamUpdateTxt;
+    @FXML
+    private TextField achternaamRapportTxt;
     
     @FXML
     public void klantToevoegenBtnPushed(ActionEvent event) throws IOException
@@ -46,6 +63,15 @@ public class OptiesKlantenController implements Initializable {
         
         window.setScene(klantToevoegenScene);
         window.show();
+    }
+    
+    public void klantInfoBtnPushed()
+    {
+        String voornaam = voornaamInfoTxt.getText();
+        String achternaam = achternaamInfoTxt.getText();
+        
+        model.getCustomer(voornaam, achternaam);
+        
     }
     
     public void terugBtnPushed (ActionEvent event) throws IOException

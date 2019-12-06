@@ -4,6 +4,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="project.gui.OptiesKlantenController">
    <children>
@@ -15,13 +16,41 @@
             <Button fx:id="klantRapportBtn" mnemonicParsing="false" prefHeight="15.0" prefWidth="110.0" text="Klant Rapport" />
          </children>
       </VBox>
-      <VBox layoutX="192.0" layoutY="105.0" prefHeight="175.0" prefWidth="215.0" spacing="30.0">
+      <VBox layoutX="192.0" layoutY="105.0" prefHeight="175.0" prefWidth="129.0" spacing="30.0">
          <children>
-            <TextField prefHeight="15.0" />
-            <TextField prefHeight="15.0" />
-            <TextField prefHeight="15.0" />
+            <TextField fx:id="voornaamInfoTxt" minHeight="26.0" prefHeight="15.0" promptText="voornaam">
+               <font>
+                  <Font size="10.0" />
+               </font></TextField>
+            <TextField fx:id="voornaamUpdateTxt" minHeight="26.0" prefHeight="15.0" promptText="voornaam">
+               <font>
+                  <Font size="10.0" />
+               </font></TextField>
+            <TextField fx:id="voornaamRapportTxt" minHeight="26.0" prefHeight="15.0" promptText="voornaam">
+               <font>
+                  <Font size="10.0" />
+               </font></TextField>
          </children>
       </VBox>
       <Button fx:id="terugBtn" layoutX="457.0" layoutY="256.0" mnemonicParsing="false" prefWidth="110.0" text="Terug" />
+      <VBox layoutX="321.0" layoutY="105.0" prefHeight="175.0" prefWidth="129.0" spacing="30.0">
+         <children>
+            <TextField fx:id="achternaamInfoTxt" minHeight="26.0" prefHeight="15.0" promptText="achternaam">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </TextField>
+            <TextField fx:id="achternaamUpdateTxt" minHeight="26.0" prefHeight="15.0" promptText="achternaam">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </TextField>
+            <TextField fx:id="achternaamRapportTxt" minHeight="26.0" prefHeight="15.0" promptText="achternaam">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </TextField>
+         </children>
+      </VBox>
    </children>
 </AnchorPane>

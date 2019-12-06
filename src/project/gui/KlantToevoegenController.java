@@ -22,6 +22,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 import project.db.DBCustomer;
 import project.db.DBException;
+import project.logic.Agency;
 import project.logic.Customer;
 
 /**
@@ -31,6 +32,8 @@ import project.logic.Customer;
  */
 public class KlantToevoegenController implements Initializable {
 
+    private Agency model;
+    
     @FXML
     private TextField voornaamTxt;
     @FXML
@@ -73,7 +76,7 @@ public class KlantToevoegenController implements Initializable {
         {
             Customer klant = new Customer(ID, land, voornaam, achternaam, geboortedatum, gender);
                                                                                 //update lijst van customers bij optiesKlanten en eigenlijk ook bij reis boeken
-            DBCustomer.saveCustomer(klant);                                     //moet nog via model agency
+            model.addCustomer(klant);                                           
         }
     }
     
