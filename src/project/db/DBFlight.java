@@ -723,13 +723,15 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
       
     }
       return vluchten;
+   
+    }
     
   catch (Exception ex) {
       System.out.println("ex.getMessage");
       DBConnector.closeConnection(con);
       throw new DBException(ex);
     }
-    }
+    
   
   /*public static ArrayList<ArrayList<Flight[]>> getFlight2(String dAirport, String aAirport, String depDate) throws DBException
   {
