@@ -498,13 +498,14 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
   */
   
   
-  public static boolean tijdControle(Flight[] arrayVluchten) throws ParseException{
+  public static boolean tijdControle2(Flight[] arrayVluchten) throws ParseException{
       boolean possible = false;
       
               SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
               Date date1 = format.parse(arrayVluchten[0].getArrivalDateTime().substring(10));
               Date date2 = format.parse(arrayVluchten[1].getDepDateTime().substring(10));
               long difference = date2.getTime() - date1.getTime();
+              
               //de output van difference is in milliseconden, 1 800 000 milliseconden zijn 30 minuten,
               //dit nemen we als minimumtijd die je nodig hebt om over te stappen.
               if(difference >= 1800000){
@@ -521,19 +522,47 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
               Date date1 = format.parse(arrayVluchten[0].getArrivalDateTime().substring(10));
               Date date2 = format.parse(arrayVluchten[1].getDepDateTime().substring(10));
               long difference1 = date2.getTime() - date1.getTime();
+              
+              //de output van difference is in milliseconden, 1 800 000 milliseconden zijn 30 minuten,
+              //dit nemen we als minimumtijd die je nodig hebt om over te stappen.
            
               Date date3 = format.parse(arrayVluchten[2].getDepDateTime().substring(10));
               long difference2 = date3.getTime() - date2.getTime();
               
-              //de output van difference is in milliseconden, 1 800 000 milliseconden zijn 30 minuten,
-              //dit nemen we als minimumtijd die je nodig hebt om over te stappen.
               if(difference1 >= 1800000 && difference2 >= 1800000){
                   possible = true;
               }
+        
+        return possible;
+  }  
+   
+  public static boolean tijdControle4(Flight[] arrayVluchten) throws ParseException{
+      boolean possible = false;
+      //for(int i = 0; i < arrayVluchten.length; i++){
+              SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+              Date date1 = format.parse(arrayVluchten[0].getArrivalDateTime().substring(10));
+              Date date2 = format.parse(arrayVluchten[1].getDepDateTime().substring(10));
+              long difference1 = date2.getTime() - date1.getTime();
               
-      //}
-      return possible; 
-  }
+              //de output van difference is in milliseconden, 1 800 000 milliseconden zijn 30 minuten,
+              //dit nemen we als minimumtijd die je nodig hebt om over te stappen.
+           
+              Date date3 = format.parse(arrayVluchten[2].getDepDateTime().substring(10));
+              long difference2 = date3.getTime() - date2.getTime();
+              
+              Date date4 = format.parse(arrayVluchten[2].getDepDateTime().substring(10));
+              long difference3 = date4.getTime() - date3.getTime();
+              
+              if(difference1 >= 1800000 && difference2 >= 1800000 && difference3 >= 1800000){
+                  possible = true;
+              }
+              
+        return possible;
+}
+              
+     
+    
+  
   
   public static ArrayList<ArrayList<Flight[]>> getFlight(String dAirport, String aAirport, String depDate, int maxTransfers) throws DBException, ParseException, SQLException
   {
@@ -615,7 +644,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
                              Flight[] flights2 = new Flight[2];
                              flights2[0] = overigeFlights.get(r);
                              flights2[1] = flight;
-                             if(tijdControle(flights2) == true){
+                             if(tijdControle2(flights2) == true){
                              doubleFlights.add(flights2);
                              }
                         }
@@ -703,7 +732,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
                             flights4[1] = overigeFlights2.get(l);
                             flights4[2] = overigeFlights3.get(u);
                             flights4[3] = flight;
-                            if(tijdControle3(flights4) == true){
+                            if(tijdControle4(flights4) == true){
                             tripleFlights.add(flights4);
                             }
                         }
