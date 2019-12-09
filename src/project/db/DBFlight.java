@@ -8,6 +8,7 @@ package project.db;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -534,7 +535,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
       return possible; 
   }
   
-  public static ArrayList<ArrayList<Flight[]>> getFlight(String dAirport, String aAirport, String depDate, int maxTransfers) throws DBException, ParseException
+  public static ArrayList<ArrayList<Flight[]>> getFlight(String dAirport, String aAirport, String depDate, int maxTransfers) throws DBException, ParseException, SQLException
   {
       Connection con = null;
     try {
@@ -545,11 +546,15 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
       String Correct_depDate = getDateTime(depDate);
       ArrayList<String> d_Codes1 = new ArrayList<>();
       ArrayList<String> d_Codes2 = new ArrayList<>();
+      ArrayList<String> d_Codes3 = new ArrayList<>();
       ArrayList<Flight[]> singleFlights = new ArrayList<>();
       ArrayList<Flight[]> doubleFlights = new ArrayList<>();
       ArrayList<Flight[]> tripleFlights = new ArrayList<>();
+      ArrayList<Flight[]> quadrupleFlights = new ArrayList<>();
       ArrayList<Flight> overigeFlights = new ArrayList<>();
       ArrayList<Flight> overigeFlights2 = new ArrayList<>();
+      ArrayList<Flight> overigeFlights3 = new ArrayList<>();
+      ArrayList<Flight> overigeFlights4 = new ArrayList<>();
       ArrayList<ArrayList<Flight[]>> vluchten = new ArrayList<>();
       for(int i = 0; i < maxTransfers; i++){
           
@@ -623,7 +628,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
             }
       }
             else if(i == 2 && !overigeFlights2.isEmpty()){
-                for(int p = 0; p < overigeFlights.size(); p++){
+                for(int p = 0; p < overigeFlights2.size(); p++){
                 String A_CODE = overigeFlights2.get(p).getA_Code();
                 d_Codes2.add(p, A_CODE);
                 sqlFlights = "SELECT * "
@@ -659,17 +664,66 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
                     }
                     }
                 }
+                  else if(i == 1){
+                    overigeFlights3.add(flight);
                 }
             }
             }
-          
+            }
+            
+          else if(i == 3 && !overigeFlights3.isEmpty()){
+                for(int p = 0; p < overigeFlights3.size(); p++){
+                String A_CODE = overigeFlights3.get(p).getA_Code();
+                d_Codes3.add(p, A_CODE);
+                sqlFlights = "SELECT * "
+              + "FROM FLIGHT "
+              + "WHERE D_CODE = '" + d_Codes3.get(p) + "'" + "AND CAST(DEPDATETIME as DATE) = '" + Correct_depDate + "'";
+            ResultSet rsFlights = stmt.executeQuery(sqlFlights);
+            
+            String flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code;
+            
+            while(rsFlights.next())
+            {
+                flightNr = rsFlights.getString("FLIGHTNR");
+                depDateTime = rsFlights.getString("DEPDATETIME");
+                arrivalDateTime = rsFlights.getString("ARRIVALDATETIME");
+                carbondio = rsFlights.getString("CARBONDIO");
+                ICAO = rsFlights.getString("ICAO");
+                d_Code = rsFlights.getString("D_CODE");
+                a_Code = rsFlights.getString("A_CODE");
+                Flight flight = new Flight(flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code);
+
+                if(i == 3 && a_Code.equalsIgnoreCase(A_Code)){
+                    for(int r = 0; r < overigeFlights.size(); r++){
+                        for(int l = 0; l < overigeFlights2.size(); l++){
+                            for(int u = 0; u < overigeFlights3.size(); u++)
+                        if(overigeFlights.get(r).getA_Code().equalsIgnoreCase(overigeFlights2.get(l).getD_Code()) && overigeFlights2.get(l).getA_Code().equalsIgnoreCase(overigeFlights3.get(u).getD_Code()) && overigeFlights3.get(u).getA_Code().equalsIgnoreCase(d_Code)){
+                            Flight[] flights4 = new Flight[4];
+                            flights4[0] = overigeFlights.get(r);
+                            flights4[1] = overigeFlights2.get(l);
+                            flights4[2] = overigeFlights3.get(u);
+                            flights4[3] = flight;
+                            if(tijdControle3(flights4) == true){
+                            tripleFlights.add(flights4);
+                            }
+                        }
+                    }
+                    }
+                }
+                else if(i == 1){
+                    overigeFlights4.add(flight);
+                }
+            }
+            }
       }
       DBConnector.closeConnection(con);
       vluchten.add(singleFlights);
       vluchten.add(doubleFlights);
       vluchten.add(tripleFlights);
-      return vluchten;
+      
     }
+      return vluchten;
+    
   catch (Exception ex) {
       System.out.println("ex.getMessage");
       DBConnector.closeConnection(con);
