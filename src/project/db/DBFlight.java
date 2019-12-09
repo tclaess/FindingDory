@@ -534,7 +534,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
       return possible; 
   }
   
-  public static ArrayList<ArrayList<Flight[]>> getFlight(String dAirport, String aAirport, String depDate) throws DBException, ParseException
+  public static ArrayList<ArrayList<Flight[]>> getFlight(String dAirport, String aAirport, String depDate, int maxTransfers) throws DBException, ParseException
   {
       Connection con = null;
     try {
@@ -551,7 +551,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
       ArrayList<Flight> overigeFlights = new ArrayList<>();
       ArrayList<Flight> overigeFlights2 = new ArrayList<>();
       ArrayList<ArrayList<Flight[]>> vluchten = new ArrayList<>();
-      for(int i = 0; i < 3; i++){
+      for(int i = 0; i < maxTransfers; i++){
           
             String sqlFlights;
             if(i == 0){
@@ -1313,7 +1313,69 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
         }
         return output;
     }  
+
+  /*
+  public static ArrayList<Flight[]> getTransferFlights(String dAirport, String aAirport, String depDate, int maxHops) throws DBException, ParseException
+  {
+    Connection con = null;
+    
+      String D_Code = getCode(dAirport);
+      String A_Code = getCode(aAirport);
+      String Correct_depDate = getDateTime(depDate);
+
+      if (maxHops==0)
+        {
+        break; 
+        }
       
+      
+      ArrayList<Flight[]> arrayFinalVluchten = new ArrayList<Flight[]>();
+      ArrayList<Flight> arrayVluchtenMetVertrekD_Code = getEersteVluchten(D_Code, Correct_depDate);
+      // ArrayList<ArrayList<Flight>> optieVluchten = new ArrayList<ArrayList<Flight>>();
+      
+      int aantalVluchtenMetVertrekD_Code = arrayVluchtenMetVertrekD_Code.size();
+      if (aantalVluchtenMetVertrekD_Code == 0)
+        {
+        return null;
+        }
+      
+      for(int t = 0; t < (aantalVluchtenMetVertrekD_Code); t++ )
+         {
+         String T_Code = arrayVluchtenMetVertrekD_Code.get(t).getA_Code();
+         Flight[] flightArr = new Flight[1];
+         if(T_Code==A_Code)
+           {
+           flightArr[0] = arrayVluchtenMetVertrekD_Code.get(t);
+           arrayFinalVluchten.add(flightArr);
+           }
+         else
+           {
+               ArrayList<Flight> optie = new ArrayList<Flight>();
+               optie.add(arrayVluchtenMetVertrekD_Code.get(t));
+               optieVluchten.add(optie);
+           
+           flightArr[t] = arrayVluchtenMetVertrekD_Code.get(t);
+           D_Code=T_Code;
+           String departureDate = arrayVluchtenMetVertrekD_Code.get(t).getArrivalDateTime();
+           // ADD 30 minutes to depDate
+           String Correct_departureDate = getDateTime(depDate);
+           maxHops= maxHops-1;
+           ArrayList<Flight[]> arrayVolgendeVluchten = getTransferFlights(D_Code, A_Code, Correct_depDate, maxHops);
+           int aantalVluchten = arrayVolgendeVluchten.size();
+           Flight[] flightArrAlleVluchten = new Flight[aantalVluchten+1];
+           flightArrAlleVluchten[0] = flightArr[0];
+           for(int v = 1; v < (aantalVluchten+1); v++ )
+              {
+              flightArrAlleVluchten[v] = arrayVolgendeVluchten.get(v-1)[0];
+              }
+           flightArr = arrayVolgendeVluchten;
+           }
+           arrayVluchten.add(flightArr);
+        }
+      return arrayVluchten;
+      
+}
+*/
  
   // main 
   public static void main(String args[]) throws ParseException{
