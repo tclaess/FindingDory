@@ -102,9 +102,9 @@ public class DBFlight {
           }
       }
       
-      ArrayList<Flight[]> transferVluchten = tijdControle(arrayVluchten);
+      //ArrayList<Flight[]> transferVluchten = tijdControle(arrayVluchten);
       
-      return  transferVluchten;
+      return  arrayVluchten;
     
   }
   
@@ -497,23 +497,44 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
   */
   
   
-  public static ArrayList<Flight[]> tijdControle(ArrayList<Flight[]> arrayVluchten) throws ParseException{
-      ArrayList<Flight[]> HaalbareFlights = new ArrayList<>();
-      for(int i = 0; i < arrayVluchten.size(); i += 1){
+  public static boolean tijdControle(Flight[] arrayVluchten) throws ParseException{
+      boolean possible = false;
+      
               SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
-              Date date1 = format.parse(arrayVluchten.get(i)[0].getArrivalDateTime().substring(10));
-              Date date2 = format.parse(arrayVluchten.get(i)[1].getDepDateTime().substring(10));
+              Date date1 = format.parse(arrayVluchten[0].getArrivalDateTime().substring(10));
+              Date date2 = format.parse(arrayVluchten[1].getDepDateTime().substring(10));
               long difference = date2.getTime() - date1.getTime();
               //de output van difference is in milliseconden, 1 800 000 milliseconden zijn 30 minuten,
               //dit nemen we als minimumtijd die je nodig hebt om over te stappen.
               if(difference >= 1800000){
-                  HaalbareFlights.add(arrayVluchten.get(i));
+                  possible = true;
               }
-      }
-      return HaalbareFlights; 
+      
+      return possible; 
   }
   
-  public static ArrayList<ArrayList<Flight>> getFlight(String dAirport, String aAirport, String depDate) throws DBException
+  public static boolean tijdControle3(Flight[] arrayVluchten) throws ParseException{
+      boolean possible = false;
+      //for(int i = 0; i < arrayVluchten.length; i++){
+              SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+              Date date1 = format.parse(arrayVluchten[0].getArrivalDateTime().substring(10));
+              Date date2 = format.parse(arrayVluchten[1].getDepDateTime().substring(10));
+              long difference1 = date2.getTime() - date1.getTime();
+           
+              Date date3 = format.parse(arrayVluchten[2].getDepDateTime().substring(10));
+              long difference2 = date3.getTime() - date2.getTime();
+              
+              //de output van difference is in milliseconden, 1 800 000 milliseconden zijn 30 minuten,
+              //dit nemen we als minimumtijd die je nodig hebt om over te stappen.
+              if(difference1 >= 1800000 && difference2 >= 1800000){
+                  possible = true;
+              }
+              
+      //}
+      return possible; 
+  }
+  
+  public static ArrayList<ArrayList<Flight[]>> getFlight(String dAirport, String aAirport, String depDate) throws DBException, ParseException
   {
       Connection con = null;
     try {
@@ -522,22 +543,165 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
       String D_Code = getCode(dAirport);
       String A_Code = getCode(aAirport);
       String Correct_depDate = getDateTime(depDate);
-      ArrayList<String> d_Codes = new ArrayList<>();
-      d_Codes.add(D_Code);
+      ArrayList<String> d_Codes1 = new ArrayList<>();
       ArrayList<String> d_Codes2 = new ArrayList<>();
-      ArrayList<Flight> singleFlights = new ArrayList<>();
-      ArrayList<Flight> doubleFlights = new ArrayList<>();
-      ArrayList<Flight> tripleFlights = new ArrayList<>();
+      ArrayList<Flight[]> singleFlights = new ArrayList<>();
+      ArrayList<Flight[]> doubleFlights = new ArrayList<>();
+      ArrayList<Flight[]> tripleFlights = new ArrayList<>();
       ArrayList<Flight> overigeFlights = new ArrayList<>();
       ArrayList<Flight> overigeFlights2 = new ArrayList<>();
-      ArrayList<Flight[]> vluchten1 = new ArrayList<>();
-      ArrayList<Flight[]> vluchten2 = new ArrayList<>();
-      ArrayList<Flight[]> vluchten3 = new ArrayList<>();
-      ArrayList<ArrayList<Flight>> vluchten = new ArrayList<>();
-      ArrayList<Flight> realDoubleFlights = new ArrayList<>();
-      ArrayList<Flight> realTripleFlights = new ArrayList<>();
+      ArrayList<ArrayList<Flight[]>> vluchten = new ArrayList<>();
       for(int i = 0; i < 3; i++){
-          for(int p = 0; p < d_Codes.size(); p++){
+          
+            String sqlFlights;
+            if(i == 0){
+                sqlFlights = "SELECT * "
+              + "FROM FLIGHT "
+              + "WHERE D_CODE = '" + D_Code + "'" + "AND CAST(DEPDATETIME as DATE) = '" + Correct_depDate + "'";
+                ResultSet rsFlights = stmt.executeQuery(sqlFlights);
+                
+                String flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code;
+            
+            while(rsFlights.next())
+            {
+                flightNr = rsFlights.getString("FLIGHTNR");
+                depDateTime = rsFlights.getString("DEPDATETIME");
+                arrivalDateTime = rsFlights.getString("ARRIVALDATETIME");
+                carbondio = rsFlights.getString("CARBONDIO");
+                ICAO = rsFlights.getString("ICAO");
+                d_Code = rsFlights.getString("D_CODE");
+                a_Code = rsFlights.getString("A_CODE");
+                Flight flight = new Flight(flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code);
+
+                if(i == 0 && a_Code.equalsIgnoreCase(A_Code)){
+                    Flight[] flights1 = new Flight[1];
+                    flights1[0] = flight;
+                    singleFlights.add(flights1);
+                }
+                else if(i == 0){
+                    overigeFlights.add(flight);
+                }
+            }
+            }
+            else if(i == 1 && !overigeFlights.isEmpty() ){
+                for(int p = 0; p < overigeFlights.size(); p++){
+                    String A_CODE = overigeFlights.get(p).getA_Code();
+                    d_Codes1.add(p, A_CODE);
+                sqlFlights = "SELECT * "
+              + "FROM FLIGHT "
+              + "WHERE D_CODE = '" + d_Codes1.get(p) + "'" + "AND CAST(DEPDATETIME as DATE) = '" + Correct_depDate + "'";
+            ResultSet rsFlights = stmt.executeQuery(sqlFlights);
+                    String flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code;
+            
+            while(rsFlights.next())
+            {
+                flightNr = rsFlights.getString("FLIGHTNR");
+                depDateTime = rsFlights.getString("DEPDATETIME");
+                arrivalDateTime = rsFlights.getString("ARRIVALDATETIME");
+                carbondio = rsFlights.getString("CARBONDIO");
+                ICAO = rsFlights.getString("ICAO");
+                d_Code = rsFlights.getString("D_CODE");
+                a_Code = rsFlights.getString("A_CODE");
+                Flight flight = new Flight(flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code);
+
+                if(i == 1 && a_Code.equalsIgnoreCase(A_Code)){
+                    for(int r = 0; r < overigeFlights.size(); r++){
+                        if(overigeFlights.get(r).getA_Code().equalsIgnoreCase(d_Code) && overigeFlights.get(r).getD_Code().equalsIgnoreCase(D_Code)){
+                             Flight[] flights2 = new Flight[2];
+                             flights2[0] = overigeFlights.get(r);
+                             flights2[1] = flight;
+                             if(tijdControle(flights2) == true){
+                             doubleFlights.add(flights2);
+                             }
+                        }
+                    }
+                }
+                else if(i == 1){
+                    overigeFlights2.add(flight);
+                }
+            }
+            }
+      }
+            else if(i == 2 && !overigeFlights2.isEmpty()){
+                for(int p = 0; p < overigeFlights.size(); p++){
+                String A_CODE = overigeFlights2.get(p).getA_Code();
+                d_Codes2.add(p, A_CODE);
+                sqlFlights = "SELECT * "
+              + "FROM FLIGHT "
+              + "WHERE D_CODE = '" + d_Codes2.get(p) + "'" + "AND CAST(DEPDATETIME as DATE) = '" + Correct_depDate + "'";
+            ResultSet rsFlights = stmt.executeQuery(sqlFlights);
+            
+            String flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code;
+            
+            while(rsFlights.next())
+            {
+                flightNr = rsFlights.getString("FLIGHTNR");
+                depDateTime = rsFlights.getString("DEPDATETIME");
+                arrivalDateTime = rsFlights.getString("ARRIVALDATETIME");
+                carbondio = rsFlights.getString("CARBONDIO");
+                ICAO = rsFlights.getString("ICAO");
+                d_Code = rsFlights.getString("D_CODE");
+                a_Code = rsFlights.getString("A_CODE");
+                Flight flight = new Flight(flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code);
+
+                if(i == 2 && a_Code.equalsIgnoreCase(A_Code)){
+                    for(int r = 0; r < overigeFlights.size(); r++){
+                        for(int l = 0; l < overigeFlights2.size(); l++){
+                        if(overigeFlights.get(r).getA_Code().equalsIgnoreCase(overigeFlights2.get(l).getD_Code()) && overigeFlights2.get(l).getA_Code().equalsIgnoreCase(d_Code)){
+                            Flight[] flights3 = new Flight[3];
+                            flights3[0] = overigeFlights.get(r);
+                            flights3[1] = overigeFlights2.get(l);
+                            flights3[2] = flight;
+                            if(tijdControle3(flights3) == true){
+                            tripleFlights.add(flights3);
+                            }
+                        }
+                    }
+                    }
+                }
+                }
+            }
+            }
+          
+      }
+      DBConnector.closeConnection(con);
+      vluchten.add(singleFlights);
+      vluchten.add(doubleFlights);
+      vluchten.add(tripleFlights);
+      return vluchten;
+    }
+  catch (Exception ex) {
+      System.out.println("ex.getMessage");
+      DBConnector.closeConnection(con);
+      throw new DBException(ex);
+    }
+    }
+  
+  /*public static ArrayList<ArrayList<Flight[]>> getFlight2(String dAirport, String aAirport, String depDate) throws DBException
+  {
+      Connection con = null;
+    try {
+      String D_Code = getCode(dAirport);
+      String A_Code = getCode(aAirport);
+      String Correct_depDate = getDateTime(depDate);
+      con = DBConnector.getConnection();
+              Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+      
+      ArrayList<String> d_Codes = new ArrayList<>();
+      d_Codes.add(D_Code);
+      ArrayList<Flight[]> singleFlights = new ArrayList<>();
+      ArrayList<Flight[]> doubleFlights = new ArrayList<>();
+      ArrayList<Flight[]> tripleFlights = new ArrayList<>();
+      ArrayList<Flight> overigeFlights = new ArrayList<>();
+      ArrayList<Flight> overigeFlights2 = new ArrayList<>();
+      ArrayList<ArrayList<Flight[]>> vluchten = new ArrayList<>();
+      ArrayList<Flight[]> realDoubleFlights = new ArrayList<>();
+      ArrayList<Flight[]> realTripleFlights = new ArrayList<>();
+     
+      
+      for(int i = 0; i < 3; i++){
+          
+          for(int p = 0; p < s; p++){
             String sqlFlights = "SELECT * "
               + "FROM FLIGHT "
               + "WHERE D_CODE = '" + d_Codes.get(p) + "'" + "AND CAST(DEPDATETIME as DATE) = '" + Correct_depDate + "'";
@@ -557,19 +721,26 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
                 a_Code = rsFlights.getString("A_CODE");
                 Flight flight = new Flight(flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code);
 
-                if(i == 0 && a_Code.equalsIgnoreCase(A_Code)){
-                    singleFlights.add(flight); 
+                if(i == 0 && a_Code.equals(A_Code)){
+                    Flight[] singleVlucht = new Flight[1];
+                    singleVlucht[0] = flight;
+                    singleFlights.add(singleVlucht); 
                 }
                 else if(i == 0){
+                    
                     overigeFlights.add(flight);
                     d_Codes.add(p, a_Code);
+                    q++;
+                    
                 }
                 else if(i == 1 && a_Code.equalsIgnoreCase(A_Code)){
                     for(int r = 0; r < overigeFlights.size(); r++){
                         if(overigeFlights.get(r).getA_Code().equalsIgnoreCase(d_Code)){
-                             doubleFlights.add(overigeFlights.get(r));
-                             doubleFlights.add(flight);
-                             realDoubleFlights = tijdControle(doubleFlights);
+                             Flight[] doubleVlucht = new Flight[2];
+                             doubleVlucht[0] = overigeFlights.get(r);
+                             doubleVlucht[1] = flight;
+                             doubleFlights.add(doubleVlucht);
+                             
                         }
                     }
                 }
@@ -581,21 +752,26 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
                     for(int r = 0; r < overigeFlights.size(); r++){
                         for(int l = 0; l < overigeFlights2.size(); l++){
                         if(overigeFlights.get(r).getA_Code().equalsIgnoreCase(overigeFlights2.get(l).getD_Code()) && overigeFlights2.get(l).getA_Code().equalsIgnoreCase(d_Code)){
-                            tripleFlights.add(overigeFlights.get(r));
-                            tripleFlights.add(overigeFlights2.get(l));
-                            tripleFlights.add(flight);
+                            Flight[] tripleVlucht = new Flight[3];
+                            tripleVlucht[0] = overigeFlights.get(r);
+                            tripleVlucht[1] = overigeFlights2.get(l);
+                            tripleVlucht[2] = flight;
+                            tripleFlights.add(tripleVlucht);
+                            
                             //realTripleFlights = tijdControle(tripleFlights);
                         }
                     }
                     }
                 }
             }
+            s = q;
           }
       }
-      DBConnector.closeConnection(con);
+      realDoubleFlights = tijdControle(doubleFlights);
       vluchten.add(singleFlights);
       vluchten.add(realDoubleFlights);
       vluchten.add(tripleFlights);
+      DBConnector.closeConnection(con);
       return vluchten;
     }
   catch (Exception ex) {
@@ -604,7 +780,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
       throw new DBException(ex);
     }
     }
-   
+   */
   /* In deze methode berekenen we het verschil in milliseconden tussen twee data; We moeten het formaat nog wel omzetten
   om zo de SimpleDateFormat klasse te kunnen gebruiken
   */
@@ -667,7 +843,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
  
   
   /* Deze methode geeft een mooie output weer voor een ArrayList van Flight[] */ 
-      public static String toString1(ArrayList<Flight[]> flights) {
+      public static String toString1(ArrayList<Flight[]> flights){
           Connection con = null;
           String output = "";
           try {
@@ -820,45 +996,46 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
                         String totalBuss;
                         String totalFirst;
                         
-                        if(check1 == false && check2 == false && check3 == false){ 
-                            totalEco = "Niet beschikbaar";
-                            totalBuss = "Niet beschikbaar"; 
-                            totalFirst = "Niet beschikbaar"; 
+                        if(check1 == true && check2 == true && check3 == true){
+                            totalEco = String.valueOf(Float.parseFloat(priceEco) + Float.parseFloat(priceEco1)); 
+                            totalBuss = String.valueOf(Float.parseFloat(priceBuss) + Float.parseFloat(priceBuss1)); 
+                            totalFirst = String.valueOf(Float.parseFloat(priceFirst) + Float.parseFloat(priceFirst1)); 
+                            
                         }  
-                        if(!check1 && !check2 ){
+                        if(!check1 && !check2 && check3 == true){
                             totalEco = "Niet beschikbaar";
                             totalBuss = "Niet beschikbaar"; 
                             totalFirst = String.valueOf(Float.parseFloat(priceFirst) + Float.parseFloat(priceFirst1));
                         }
-                        if(!check1 && !check3 ){
+                        if(!check1 && !check3 && check2 == true){
                             totalEco = "Niet beschikbaar";
                             totalBuss = String.valueOf(Float.parseFloat(priceBuss) + Float.parseFloat(priceBuss1)); 
                             totalFirst = "Niet beschikbaar";
                         }
-                        if(!check2 && !check3 ){
+                        if(!check2 && !check3 && check1 == true){
                             totalEco = String.valueOf(Float.parseFloat(priceEco) + Float.parseFloat(priceEco1)); 
                             totalBuss = "Niet beschikbaar"; 
                             totalFirst = "Niet beschikbaar";
                         }
-                        if(!check1){
+                        if(!check1 && check2 == true && check3 == true){
                             totalEco = "Niet beschikbaar"; 
                             totalBuss = String.valueOf(Float.parseFloat(priceBuss) + Float.parseFloat(priceBuss1)); 
                             totalFirst = String.valueOf(Float.parseFloat(priceFirst) + Float.parseFloat(priceFirst1)); 
                         }
-                        if(!check2){
+                        if(!check2 && check1 == true && check3 == true){
                             totalEco = String.valueOf(Float.parseFloat(priceEco) + Float.parseFloat(priceEco1)); ; 
                             totalBuss = "Niet beschikbaar"; 
                             totalFirst = String.valueOf(Float.parseFloat(priceFirst) + Float.parseFloat(priceFirst1)); 
                         }
-                        if(!check3){
+                        if(!check3 && check1 == true && check2 == true){
                             totalEco = String.valueOf(Float.parseFloat(priceEco) + Float.parseFloat(priceEco1)); ; 
                             totalBuss = String.valueOf(Float.parseFloat(priceBuss) + Float.parseFloat(priceBuss1)); ; 
                             totalFirst = "Niet beschikbaar"; 
                         }
                         else{
-                        totalEco = String.valueOf(Float.parseFloat(priceEco) + Float.parseFloat(priceEco1)); 
-                        totalBuss = String.valueOf(Float.parseFloat(priceBuss) + Float.parseFloat(priceBuss1)); 
-                        totalFirst = String.valueOf(Float.parseFloat(priceFirst) + Float.parseFloat(priceFirst1)); 
+                            totalEco = "Niet beschikbaar";
+                            totalBuss = "Niet beschikbaar"; 
+                            totalFirst = "Niet beschikbaar"; 
                         }     
                         
                         
@@ -898,6 +1075,225 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
                                 + "------------------------------------ \n"
                                 + " " + "\n");
                     }
+                    if(flights.get(i).length == 3){
+                                 boolean check1 = true;
+                                 boolean check2 = true; 
+                                 boolean check3 = true; 
+                                 String priceEco = "";
+                                    String sql11 = "SELECT PRICE "
+                                    + "FROM PRICE "
+                                    + "WHERE FLIGHTNR = '" + flights.get(i)[0].getFlightNr() + "' AND FLIGHTCLASS = 'ECONOMY' " ;
+
+                                        ResultSet rs11 = stmt.executeQuery(sql11);
+                                        while(rs11.next()){
+                                            priceEco = priceEco.concat(rs11.getString("PRICE"));
+                                            }
+                                        if(priceEco.equals("")){
+                                            priceEco= "Geen Economy Class beschikbaar voor deze vlucht";
+                                            check1 = false;
+                                            }
+                                    String priceBuss = "";
+                                    String sql21 = "SELECT PRICE "
+                                    + "FROM PRICE "
+                                    + "WHERE FLIGHTNR = '" + flights.get(i)[0].getFlightNr() + "' AND FLIGHTCLASS = 'BUSINESS' " ;
+
+                                        ResultSet rs21 = stmt.executeQuery(sql21);
+                                        while(rs21.next()){
+                                            priceBuss = priceBuss.concat(rs21.getString("PRICE"));
+                                            }
+                                        if(priceBuss.equals("")){
+                                            priceBuss = "Geen Business Class beschikbaar voor deze vlucht";
+                                            check2 = false;
+                                            }
+                                    String priceFirst = "";
+                                    String sql31 = "SELECT PRICE "
+                                    + "FROM PRICE "
+                                    + "WHERE FLIGHTNR = '" + flights.get(i)[0].getFlightNr() + "' AND FLIGHTCLASS = 'FIRST' " ;
+
+                                        ResultSet rs31 = stmt.executeQuery(sql31);
+                                        while(rs31.next()){
+                                            priceFirst = priceFirst.concat(rs31.getString("PRICE"));
+                                            }
+                                        if(priceFirst.equals("")){
+                                            priceFirst = "Geen First Class beschikbaar voor deze vlucht";
+                                            check3 = false;
+                                            }
+                                    String priceEco1 = "";
+                                    String sql12 = "SELECT PRICE "
+                                    + "FROM PRICE "
+                                    + "WHERE FLIGHTNR = '" + flights.get(i)[1].getFlightNr() + "' AND FLIGHTCLASS = 'ECONOMY' " ;
+
+                                        ResultSet rs12 = stmt.executeQuery(sql12);
+                                        while(rs12.next()){
+                                            priceEco1 = priceEco1.concat(rs12.getString("PRICE"));
+                                            }
+                                        if(priceEco1.equals("")){
+                                            priceEco1 = "Geen Economy Class beschikbaar voor deze vlucht";
+                                            check1 = false;
+                                            }
+                                    String priceBuss1 = "";
+                                    String sql22 = "SELECT PRICE "
+                                    + "FROM PRICE "
+                                    + "WHERE FLIGHTNR = '" + flights.get(i)[1].getFlightNr() + "' AND FLIGHTCLASS = 'BUSINESS' " ;
+
+                                        ResultSet rs22 = stmt.executeQuery(sql22);
+                                        while(rs22.next()){
+                                            priceBuss1 = priceBuss1.concat(rs22.getString("PRICE"));
+                                            }
+                                        if(priceBuss1.equals("")){
+                                            priceBuss1 = "Geen Business Class beschikbaar voor deze vlucht";
+                                            check2 = false;
+                                            }
+                                    String priceFirst1 = "";
+                                    String sql32 = "SELECT PRICE "
+                                    + "FROM PRICE "
+                                    + "WHERE FLIGHTNR = '" + flights.get(i)[1].getFlightNr() + "' AND FLIGHTCLASS = 'FIRST' " ;
+
+                                        ResultSet rs32 = stmt.executeQuery(sql32);
+                                        while(rs32.next()){
+                                            priceFirst1 = priceFirst1.concat(rs32.getString("PRICE"));
+                                            }
+                                        if(priceFirst1.equals("")){
+                                            priceFirst1 = "Geen First Class beschikbaar voor deze vlucht";
+                                            check3 = false;
+                                            }
+                                        
+                                    String priceEco2 = "";
+                                    String sql13 = "SELECT PRICE "
+                                    + "FROM PRICE "
+                                    + "WHERE FLIGHTNR = '" + flights.get(i)[2].getFlightNr() + "' AND FLIGHTCLASS = 'ECONOMY' " ;
+
+                                        ResultSet rs13 = stmt.executeQuery(sql13);
+                                        while(rs13.next()){
+                                            priceEco2 = priceEco2.concat(rs13.getString("PRICE"));
+                                            }
+                                        if(priceEco2.equals("")){
+                                            priceEco2 = "Geen Economy Class beschikbaar voor deze vlucht";
+                                            check1 = false;
+                                            }
+                                    String priceBuss2 = "";
+                                    String sql23 = "SELECT PRICE "
+                                    + "FROM PRICE "
+                                    + "WHERE FLIGHTNR = '" + flights.get(i)[2].getFlightNr() + "' AND FLIGHTCLASS = 'BUSINESS' " ;
+
+                                        ResultSet rs23 = stmt.executeQuery(sql23);
+                                        while(rs23.next()){
+                                            priceBuss2 = priceBuss2.concat(rs23.getString("PRICE"));                                           
+                                            }
+                                        if(priceBuss2.equals("")){
+                                            priceBuss2 = "Geen Business Class beschikbaar voor deze vlucht";
+                                            check2 = false;
+                                            }
+                                    String priceFirst2 = "";
+                                    String sql33 = "SELECT PRICE "
+                                    + "FROM PRICE "
+                                    + "WHERE FLIGHTNR = '" + flights.get(i)[2].getFlightNr() + "' AND FLIGHTCLASS = 'FIRST' " ;
+
+                                        ResultSet rs33 = stmt.executeQuery(sql33);
+                                        while(rs33.next()){
+                                            priceFirst2 = priceFirst2.concat(rs33.getString("PRICE"));
+                                            }
+                                        if(priceFirst2.equals("")){
+                                            priceFirst2 = "Geen First Class beschikbaar voor deze vlucht";
+                                            check3 = false;
+                                            }
+                                        
+                        String totalEco;
+                        String totalBuss;
+                        String totalFirst;
+                       
+                      
+                       if(check1 == false && check2 == false && check3 == false){ 
+                            totalEco = "Niet beschikbaar";
+                            totalBuss = "Niet beschikbaar"; 
+                            totalFirst = "Niet beschikbaar"; 
+                        }  
+                       else if(!check1 && !check2){
+                            totalEco = "Niet beschikbaar";
+                            totalBuss = "Niet beschikbaar"; 
+                            totalFirst = String.valueOf(Float.parseFloat(priceFirst) + Float.parseFloat(priceFirst1) + Float.parseFloat(priceFirst2));
+                        }
+                        else if(!check1 && !check3){
+                            totalEco = "Niet beschikbaar";
+                            totalBuss = String.valueOf(Float.parseFloat(priceBuss) + Float.parseFloat(priceBuss1) + Float.parseFloat(priceBuss2)); 
+                            totalFirst = "Niet beschikbaar";
+                        }
+                        else if(!check2 && !check3){
+                            totalEco = String.valueOf(Float.parseFloat(priceEco) + Float.parseFloat(priceEco1) + Float.parseFloat(priceEco2)); 
+                            totalBuss = "Niet beschikbaar"; 
+                            totalFirst = "Niet beschikbaar";
+                        }
+                        else if(!check1){
+                            totalEco = "Niet beschikbaar"; 
+                            totalBuss = String.valueOf(Float.parseFloat(priceBuss) + Float.parseFloat(priceBuss1) + Float.parseFloat(priceBuss2)); 
+                            totalFirst = String.valueOf(Float.parseFloat(priceFirst) + Float.parseFloat(priceFirst1) + Float.parseFloat(priceFirst2)); 
+                        }
+                        else if(!check2){
+                            totalEco = String.valueOf(Float.parseFloat(priceEco) + Float.parseFloat(priceEco1) + Float.parseFloat(priceEco2)); ; 
+                            totalBuss = "Niet beschikbaar"; 
+                            totalFirst = String.valueOf(Float.parseFloat(priceFirst) + Float.parseFloat(priceFirst1) + Float.parseFloat(priceFirst2)); 
+                        }
+                        else if(!check3){
+                            totalEco = String.valueOf(Float.parseFloat(priceEco) + Float.parseFloat(priceEco1) + Float.parseFloat(priceEco2)); ; 
+                            totalBuss = String.valueOf(Float.parseFloat(priceBuss) + Float.parseFloat(priceBuss1) + Float.parseFloat(priceBuss2)); ; 
+                            totalFirst = "Niet beschikbaar"; 
+                        }
+                        else{
+                        totalEco = String.valueOf(Float.parseFloat(priceEco) + Float.parseFloat(priceEco1) + Float.parseFloat(priceEco2)); 
+                        totalBuss = String.valueOf(Float.parseFloat(priceBuss) + Float.parseFloat(priceBuss1) + Float.parseFloat(priceBuss2)); 
+                        totalFirst = String.valueOf(Float.parseFloat(priceFirst) + Float.parseFloat(priceFirst1) + Float.parseFloat(priceFirst2)); 
+                        }    
+                        
+                        
+                                 
+                        output =  output.concat("Transfer flight: \n"
+                                + "  Flight 1: \n"
+                                + "    flightNr= " + flights.get(i)[0].getFlightNr() + "\n" 
+                                + "    depDateTime= " + flights.get(i)[0].getDepDateTime() + "\n"  
+                                + "    arrivalDateTime= " + flights.get(i)[0].getArrivalDateTime() + "\n"  
+                                + "    carbondio= " + flights.get(i)[0].getCarbondio() + "\n"  
+                                + "    d_Code= " + flights.get(i)[0].getD_Code() + "\n"  
+                                + "    a_Code= " + flights.get(i)[0].getA_Code() + "\n"  
+                                + "    ICAO= " + flights.get(i)[0].getICAO()+ "\n"
+                                + " " + "\n"
+                                + "    PRICE Economy= " + priceEco+ "\n"
+                                + "    PRICE Business= " + priceBuss+ "\n"
+                                + "    PRICE First Class= " + priceFirst+ "\n"        
+                                + " " + "\n"
+                                + "  Flight 2: \n"
+                                + "    flightNr= " + flights.get(i)[1].getFlightNr() + "\n" 
+                                + "    depDateTime= " + flights.get(i)[1].getDepDateTime() + "\n"  
+                                + "    arrivalDateTime= " + flights.get(i)[1].getArrivalDateTime() + "\n"  
+                                + "    carbondio= " + flights.get(i)[1].getCarbondio() + "\n"  
+                                + "    d_Code= " + flights.get(i)[1].getD_Code() + "\n"  
+                                + "    a_Code= " + flights.get(i)[1].getA_Code() + "\n"  
+                                + "    ICAO= " + flights.get(i)[1].getICAO()+ "\n"
+                                + " " + "\n"
+                                + "    PRICE Economy= " + priceEco1+ "\n"
+                                + "    PRICE Business= " + priceBuss1+ "\n"
+                                + "    PRICE First Class= " + priceFirst1+ "\n"
+                                + " " + "\n"
+                                + "  Flight 3: \n"
+                                + "    flightNr= " + flights.get(i)[2].getFlightNr() + "\n" 
+                                + "    depDateTime= " + flights.get(i)[2].getDepDateTime() + "\n"  
+                                + "    arrivalDateTime= " + flights.get(i)[2].getArrivalDateTime() + "\n"  
+                                + "    carbondio= " + flights.get(i)[2].getCarbondio() + "\n"  
+                                + "    d_Code= " + flights.get(i)[2].getD_Code() + "\n"  
+                                + "    a_Code= " + flights.get(i)[2].getA_Code() + "\n"  
+                                + "    ICAO= " + flights.get(i)[2].getICAO()+ "\n"
+                                + " " + "\n"
+                                + "    PRICE Economy= " + priceEco2 + "\n"
+                                + "    PRICE Business= " + priceBuss2 + "\n"
+                                + "    PRICE First Class= " + priceFirst2 + "\n"        
+                                + " " + "\n"
+                                + "  Total price: \n "
+                                + "   PRICE Economy= " + totalEco+ "\n"
+                                + "    PRICE Business= " + totalBuss+ "\n"
+                                + "    PRICE First Class= " + totalFirst+ "\n"
+                                + " " + "\n"
+                                + "------------------------------------ \n"
+                                + " " + "\n");
+                    }
                 }
         DBConnector.closeConnection(con); 
         return output; 
@@ -923,8 +1319,8 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
   public static void main(String args[]) throws ParseException{
       
       try {
-        ArrayList<ArrayList<Flight>> test = getFlight("brussels", "london", "23/11/2019");
-          System.out.println(test);
+        ArrayList<ArrayList<Flight[]>> test = getFlight("brussels", "london", "23/11/2019");
+          System.out.println(toString2(test));
     } 
     catch (DBException e) {
        System.out.println("e.getMessage");
