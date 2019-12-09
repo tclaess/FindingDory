@@ -13,29 +13,27 @@ import project.db.DBException;
 
 /**
  *
- * @author mathi
+ * @author aroen
  */
-public class Agency {
-    
-    
+public class CustomerDBLogic {
     
     private static ArrayList<Customer> customers;
-    private static Agency agency = new Agency();
+    private static CustomerDBLogic customerDBLogic = new CustomerDBLogic();
   
-    public Agency() 
+    public CustomerDBLogic() 
     {
         try {
         customers = DBCustomer.getCustomers();
         } 
         catch (DBException ex) {
-            Logger.getLogger(Agency.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CustomerDBLogic.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
   
     
-    public static Agency getInstance()
+    public static CustomerDBLogic getInstance()
     {
-        return agency;
+        return customerDBLogic;
     }
 
     public ArrayList<Customer> getCustomers() 
@@ -45,7 +43,7 @@ public class Agency {
     
     public static Customer getCustomer(String number) throws DBException 
     {
-        return Agency.getCustomer(number);
+        return CustomerDBLogic.getCustomer(number);
     }
     
     public void addCustomer(Customer customer) 
@@ -54,7 +52,7 @@ public class Agency {
             customers.add(customer);
             DBCustomer.saveCustomer(customer);
         } catch (DBException ex) {
-            Logger.getLogger(Agency.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CustomerDBLogic.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -70,7 +68,7 @@ public class Agency {
         } 
         catch(DBException ex) 
         {
-        Logger.getLogger(Agency.class.getName()).log(Level.SEVERE, null, ex);
+        Logger.getLogger(CustomerDBLogic.class.getName()).log(Level.SEVERE, null, ex);
         }  
     }
     
@@ -89,21 +87,13 @@ public class Agency {
             customers.set(index, customer);
             DBCustomer.saveCustomer(customer);
         } catch (DBException ex) {
-            Logger.getLogger(Agency.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CustomerDBLogic.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
     
     
 }
-
-
-
-    
-
-
-
-
 
 
 

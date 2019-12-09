@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane id="AnchorPane" fx:id="StartWindow" prefHeight="332.0" prefWidth="614.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="projectA.gui.StartWindowController">
+   <children>
+      <Label layoutX="50.0" layoutY="14.0" text="Selecteer wat u wilt doen:" />
+      <AnchorPane fx:id="datapan1" layoutX="14.0" layoutY="49.0" prefHeight="200.0" prefWidth="159.0">
+         <children>
+            <Button fx:id="BoekReisBtn" layoutX="51.0" layoutY="14.0" mnemonicParsing="false" onAction="#BoekReis" text="Boek Reis" />
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="datapan2" layoutX="197.0" layoutY="35.0" prefHeight="142.0" prefWidth="177.0">
+         <children>
+            <Button fx:id="ZoekBoekingBtn" layoutX="41.0" layoutY="31.0" mnemonicParsing="false" onAction="#ZoekBoeking" text="Zoek Boeking" />
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="datapan3" layoutX="433.0" layoutY="25.0" prefHeight="142.0" prefWidth="145.0">
+         <children>
+            <Button fx:id="KlantenbestandBtn" layoutX="11.0" layoutY="40.0" mnemonicParsing="false" onAction="#OptiesKlanten" text="Klantenbestand" />
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>

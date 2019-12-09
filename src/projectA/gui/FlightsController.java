@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package project.gui;
+package projectA.gui;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -14,14 +14,21 @@ import javafx.fxml.Initializable;
  *
  * @author mathi
  */
-public class OptiesBoekingController implements Initializable {
+public class FlightsController implements Initializable {
 
-    /**
-     * Initializes the controller class.
-     */
+    
+    
+    
+    
+    
+    
+    
+    
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        
     }    
     
 }
+
