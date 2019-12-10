@@ -80,6 +80,7 @@ public class DBFlight {
                 }
                 else{
                     overigeFlights.add(flight);
+                    
                 }
             }
             }
@@ -130,6 +131,7 @@ public class DBFlight {
                 else{
                     overigeFlights2.add(flight);
                     
+                    
                 }
             }
             }
@@ -164,6 +166,7 @@ public class DBFlight {
                 a_Code = rsFlights.getString("A_CODE");
                 Flight flight = new Flight(flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code);
            
+                System.out.println("------------------" + flight.getFlightNr());
               
                 if(a_Code.equalsIgnoreCase(A_Code)){
                         
@@ -171,7 +174,7 @@ public class DBFlight {
                              
                              for(int u = 0; u < overigeFlights.size(); u++){
                                  for(int k = 0; k < overigeFlights2.size(); k++){
-                                 if(overigeFlights.get(u).getA_Code().equalsIgnoreCase(overigeFlights2.get(k).getD_Code()) && overigeFlights2.get(k).getA_Code().equalsIgnoreCase(d_Code)){
+                                 if(overigeFlights.get(u).getA_Code().equalsIgnoreCase(overigeFlights2.get(k).getD_Code()) && overigeFlights2.get(k).getA_Code().equalsIgnoreCase(flight.getD_Code())){
                                      flights3[0] = overigeFlights.get(u);
                                  }
                              }
@@ -186,23 +189,10 @@ public class DBFlight {
                              }
                              
                              flights3[2] = flight;
-                             System.out.println(flights3[0].getD_Code());
-                             System.out.println(flights3[0].getA_Code());
-                             System.out.println(flights3[0].getDepDateTime());
-                             System.out.println(flights3[0].getArrivalDateTime());
                              System.out.println(flights3[0].getFlightNr());
-                             System.out.println("----------");
-                             System.out.println(flights3[1].getD_Code());
-                             System.out.println(flights3[1].getA_Code());
-                             System.out.println(flights3[1].getDepDateTime());
-                             System.out.println(flights3[1].getArrivalDateTime());
                              System.out.println(flights3[1].getFlightNr());
-                             System.out.println("----------");
-                             System.out.println(flights3[2].getD_Code());
-                             System.out.println(flights3[2].getA_Code());
-                             System.out.println(flights3[2].getDepDateTime());
-                             System.out.println(flights3[2].getArrivalDateTime());
-                             System.out.println(flights3[2].getFlightNr()); 
+                             System.out.println(flights3[2].getFlightNr());
+                             System.out.println("----------------------------------------------");
                              
                              if(tijdControle3(flights3) == true){
                              tripleFlights.add(flights3);  
@@ -210,6 +200,7 @@ public class DBFlight {
                 }
                 else{
                     overigeFlights3.add(flight);
+                    
                 }
             }
             }
@@ -1443,7 +1434,7 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
   public static void main(String args[]) throws ParseException, SQLException{
       
       try {
-        ArrayList<ArrayList<Flight[]>> test = getFlight("brussels", "new york", "18/11/2019");
+        ArrayList<ArrayList<Flight[]>> test = getFlight("brussels", "frankfurt", "25/11/2019");
           System.out.println("lengte arraylist1 = " + test.size());
         for(int i = 0; i < test.size(); i++){
             System.out.println("met" + i + " transfer = " + test.get(i).size());
