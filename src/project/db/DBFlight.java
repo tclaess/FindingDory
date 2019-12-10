@@ -127,6 +127,7 @@ public class DBFlight {
                              if(tijdControle2(flights2) == true){
                              doubleFlights.add(flights2);
                              }
+                             
                 }
                 else{
                     overigeFlights2.add(flight);
@@ -155,6 +156,7 @@ public class DBFlight {
                 ResultSet rsFlights = stmt.executeQuery(sqlFlights);
                 String flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code;
             
+                    System.out.println(D_CODE);
             while(rsFlights.next())
             {
                 flightNr = rsFlights.getString("FLIGHTNR");
@@ -166,7 +168,7 @@ public class DBFlight {
                 a_Code = rsFlights.getString("A_CODE");
                 Flight flight = new Flight(flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code);
            
-                System.out.println("------------------" + flight.getFlightNr());
+             
               
                 if(a_Code.equalsIgnoreCase(A_Code)){
                         
@@ -180,13 +182,13 @@ public class DBFlight {
                              }
                              }
            
-                             for(int k = 0; k < overigeFlights.size(); k++){
+                            for(int k = 0; k < overigeFlights.size(); k++){
                                  for(int u = 0; u < overigeFlights2.size(); u++){
                                  if(overigeFlights2.get(u).getA_Code().equalsIgnoreCase(d_Code) && overigeFlights.get(k).getA_Code().equalsIgnoreCase(overigeFlights2.get(u).getD_Code()) ){
-                                     flights3[1] = overigeFlights2.get(u);
+                                  flights3[1] = overigeFlights2.get(u);
                                  } 
-                             }
-                             }
+                             }   
+                            }
                              
                              flights3[2] = flight;
                              System.out.println(flights3[0].getFlightNr());
