@@ -32,7 +32,7 @@ public class DBFlight {
     dat ons realistisch en acceptabel leek
     */
     
-    public static ArrayList<ArrayList<Flight[]>> getFlight(String dAirport, String aAirport, String depDate, int maxTransfers) throws DBException, ParseException, SQLException
+   public static ArrayList<ArrayList<Flight[]>> getFlight(String dAirport, String aAirport, String depDate) throws DBException, ParseException, SQLException
   {
       Connection con = null;
     try {
@@ -41,20 +41,18 @@ public class DBFlight {
       String D_Code = getCode(dAirport);
       String A_Code = getCode(aAirport);
       String Correct_depDate = getDateTime(depDate);
-      ArrayList<String> d_Codes1 = new ArrayList<>();
-      ArrayList<String> d_Codes2 = new ArrayList<>();
-      ArrayList<String> d_Codes3 = new ArrayList<>();
+      ArrayList<String> D_CODES1 = new ArrayList<>();
+      ArrayList<String> D_CODES2 = new ArrayList<>();
       ArrayList<Flight[]> singleFlights = new ArrayList<>();
       ArrayList<Flight[]> doubleFlights = new ArrayList<>();
       ArrayList<Flight[]> tripleFlights = new ArrayList<>();
-      ArrayList<Flight[]> quadrupleFlights = new ArrayList<>();
       ArrayList<Flight> overigeFlights = new ArrayList<>();
       ArrayList<Flight> overigeFlights2 = new ArrayList<>();
       ArrayList<Flight> overigeFlights3 = new ArrayList<>();
-      ArrayList<Flight> overigeFlights4 = new ArrayList<>();
+      ArrayList<Flight> nonduplicateFlights1 = new ArrayList<>();
+      ArrayList<Flight> nonduplicateFlights2 = new ArrayList<>();
       ArrayList<ArrayList<Flight[]>> vluchten = new ArrayList<>();
-      for(int i = 0; i < maxTransfers; i++){
-          
+      for(int i = 0; i < 3; i++){
             String sqlFlights;
             if(i == 0){
                 sqlFlights = "SELECT * "
@@ -75,25 +73,34 @@ public class DBFlight {
                 a_Code = rsFlights.getString("A_CODE");
                 Flight flight = new Flight(flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code);
 
-                if(i == 0 && a_Code.equalsIgnoreCase(A_Code)){
+                if(a_Code.equalsIgnoreCase(A_Code)){
                     Flight[] flights1 = new Flight[1];
                     flights1[0] = flight;
                     singleFlights.add(flights1);
                 }
-                else if(i == 0){
+                else{
                     overigeFlights.add(flight);
                 }
             }
             }
-            else if(i == 1 && !overigeFlights.isEmpty() ){
+            
+            if(i == 1 && !overigeFlights.isEmpty() ){
                 for(int p = 0; p < overigeFlights.size(); p++){
                     String A_CODE = overigeFlights.get(p).getA_Code();
-                    d_Codes1.add(p, A_CODE);
+                    if(!D_CODES1.contains(A_CODE)){
+                        D_CODES1.add(A_CODE);
+                    }
+                }
+                
+                for(int p = 0; p < D_CODES1.size(); p++){
+                    String D_CODE = D_CODES1.get(p);
+                    
+                    
                 sqlFlights = "SELECT * "
-              + "FROM FLIGHT "
-              + "WHERE D_CODE = '" + d_Codes1.get(p) + "'" + "AND CAST(DEPDATETIME as DATE) = '" + Correct_depDate + "'";
-            ResultSet rsFlights = stmt.executeQuery(sqlFlights);
-                    String flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code;
+                    + "FROM FLIGHT "
+                    + "WHERE D_CODE = '" + D_CODE + "'" + "AND CAST(DEPDATETIME as DATE) = '" + Correct_depDate + "'";
+                ResultSet rsFlights = stmt.executeQuery(sqlFlights);
+                String flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code;
             
             while(rsFlights.next())
             {
@@ -105,35 +112,46 @@ public class DBFlight {
                 d_Code = rsFlights.getString("D_CODE");
                 a_Code = rsFlights.getString("A_CODE");
                 Flight flight = new Flight(flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code);
-
-                if(i == 1 && a_Code.equalsIgnoreCase(A_Code)){
-                    for(int r = 0; r < overigeFlights.size(); r++){
-                        if(overigeFlights.get(r).getA_Code().equalsIgnoreCase(d_Code) && overigeFlights.get(r).getD_Code().equalsIgnoreCase(D_Code)){
+           
+                
+                if(a_Code.equalsIgnoreCase(A_Code)){
+                        
                              Flight[] flights2 = new Flight[2];
-                             flights2[0] = overigeFlights.get(r);
+                             for(int u = 0; u < overigeFlights.size(); u++){
+                                 if(overigeFlights.get(u).getA_Code().equalsIgnoreCase(flight.getD_Code())){
+                                     flights2[0] = overigeFlights.get(u);
+                                 }
+                             }
                              flights2[1] = flight;
                              if(tijdControle2(flights2) == true){
                              doubleFlights.add(flights2);
                              }
-                        }
-                    }
                 }
-                else if(i == 1){
+                else{
                     overigeFlights2.add(flight);
+                    
                 }
             }
             }
       }
-            else if(i == 2 && !overigeFlights2.isEmpty()){
-                for(int p = 0; p < overigeFlights2.size(); p++){
-                String A_CODE = overigeFlights2.get(p).getA_Code();
-                d_Codes2.add(p, A_CODE);
-                sqlFlights = "SELECT * "
-              + "FROM FLIGHT "
-              + "WHERE D_CODE = '" + d_Codes2.get(p) + "'" + "AND CAST(DEPDATETIME as DATE) = '" + Correct_depDate + "'";
-            ResultSet rsFlights = stmt.executeQuery(sqlFlights);
             
-            String flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code;
+            if(i == 2 && !overigeFlights2.isEmpty()){
+                
+            for(int p = 0; p < overigeFlights2.size(); p++){
+                    String A_CODE = overigeFlights2.get(p).getA_Code();
+                    if(!D_CODES2.contains(A_CODE)){
+                        D_CODES2.add(A_CODE); 
+                    }
+                }
+                
+                for(int p = 0; p < D_CODES2.size(); p++){
+                    String D_CODE = D_CODES2.get(p);
+                 
+                sqlFlights = "SELECT * "
+                    + "FROM FLIGHT "
+                    + "WHERE D_CODE = '" + D_CODE + "'" + "AND CAST(DEPDATETIME as DATE) = '" + Correct_depDate + "'";
+                ResultSet rsFlights = stmt.executeQuery(sqlFlights);
+                String flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code;
             
             while(rsFlights.next())
             {
@@ -145,36 +163,62 @@ public class DBFlight {
                 d_Code = rsFlights.getString("D_CODE");
                 a_Code = rsFlights.getString("A_CODE");
                 Flight flight = new Flight(flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code);
-
-                if(i == 2 && a_Code.equalsIgnoreCase(A_Code)){
-                    for(int r = 0; r < overigeFlights.size(); r++){
-                        for(int l = 0; l < overigeFlights2.size(); l++){
-                        if(overigeFlights.get(r).getA_Code().equalsIgnoreCase(overigeFlights2.get(l).getD_Code()) && overigeFlights2.get(l).getA_Code().equalsIgnoreCase(d_Code)){
-                            Flight[] flights3 = new Flight[3];
-                            flights3[0] = overigeFlights.get(r);
-                            flights3[1] = overigeFlights2.get(l);
-                            flights3[2] = flight;
-                            if(tijdControle3(flights3) == true){
-                            tripleFlights.add(flights3);
-                            }
-                        }
-                    }
-                    }
+           
+              
+                if(a_Code.equalsIgnoreCase(A_Code)){
+                        
+                             Flight[] flights3 = new Flight[3];
+                             
+                             for(int u = 0; u < overigeFlights.size(); u++){
+                                 for(int k = 0; k < overigeFlights2.size(); k++){
+                                 if(overigeFlights.get(u).getA_Code().equalsIgnoreCase(overigeFlights2.get(k).getD_Code()) && overigeFlights2.get(k).getA_Code().equalsIgnoreCase(d_Code)){
+                                     flights3[0] = overigeFlights.get(u);
+                                 }
+                             }
+                             }
+           
+                             for(int k = 0; k < overigeFlights.size(); k++){
+                                 for(int u = 0; u < overigeFlights2.size(); u++){
+                                 if(overigeFlights2.get(u).getA_Code().equalsIgnoreCase(d_Code) && overigeFlights.get(k).getA_Code().equalsIgnoreCase(overigeFlights2.get(u).getD_Code()) ){
+                                     flights3[1] = overigeFlights2.get(u);
+                                 } 
+                             }
+                             }
+                             
+                             flights3[2] = flight;
+                             System.out.println(flights3[0].getD_Code());
+                             System.out.println(flights3[0].getA_Code());
+                             System.out.println(flights3[0].getDepDateTime());
+                             System.out.println(flights3[0].getArrivalDateTime());
+                             System.out.println(flights3[0].getFlightNr());
+                             System.out.println("----------");
+                             System.out.println(flights3[1].getD_Code());
+                             System.out.println(flights3[1].getA_Code());
+                             System.out.println(flights3[1].getDepDateTime());
+                             System.out.println(flights3[1].getArrivalDateTime());
+                             System.out.println(flights3[1].getFlightNr());
+                             System.out.println("----------");
+                             System.out.println(flights3[2].getD_Code());
+                             System.out.println(flights3[2].getA_Code());
+                             System.out.println(flights3[2].getDepDateTime());
+                             System.out.println(flights3[2].getArrivalDateTime());
+                             System.out.println(flights3[2].getFlightNr()); 
+                             
+                             if(tijdControle3(flights3) == true){
+                             tripleFlights.add(flights3);  
+                             }
                 }
-                  else if(i == 1){
+                else{
                     overigeFlights3.add(flight);
                 }
             }
             }
-            }
-            
-          else if(i == 3 && !overigeFlights3.isEmpty()){
-                for(int p = 0; p < overigeFlights3.size(); p++){
-                String A_CODE = overigeFlights3.get(p).getA_Code();
-                d_Codes3.add(p, A_CODE);
+      }
+                /* for(int p = 0; p < overigeFlights2.size(); p++){
+                String A_CODE = overigeFlights2.get(p).getA_Code();
                 sqlFlights = "SELECT * "
               + "FROM FLIGHT "
-              + "WHERE D_CODE = '" + d_Codes3.get(p) + "'" + "AND CAST(DEPDATETIME as DATE) = '" + Correct_depDate + "'";
+              + "WHERE D_CODE = '" + overigeFlights2.get(p).getA_Code() + "'" + "AND CAST(DEPDATETIME as DATE) = '" + Correct_depDate + "'";
             ResultSet rsFlights = stmt.executeQuery(sqlFlights);
             
             String flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code;
@@ -190,46 +234,38 @@ public class DBFlight {
                 a_Code = rsFlights.getString("A_CODE");
                 Flight flight = new Flight(flightNr, depDateTime, arrivalDateTime, carbondio, ICAO, d_Code, a_Code);
 
-                if(i == 3 && a_Code.equalsIgnoreCase(A_Code)){
-                    for(int r = 0; r < overigeFlights.size(); r++){
-                        for(int l = 0; l < overigeFlights2.size(); l++){
-                            for(int u = 0; u < overigeFlights3.size(); u++)
-                        if(overigeFlights.get(r).getA_Code().equalsIgnoreCase(overigeFlights2.get(l).getD_Code()) && overigeFlights2.get(l).getA_Code().equalsIgnoreCase(overigeFlights3.get(u).getD_Code()) && overigeFlights3.get(u).getA_Code().equalsIgnoreCase(d_Code)){
-                            Flight[] flights4 = new Flight[4];
-                            flights4[0] = overigeFlights.get(r);
-                            flights4[1] = overigeFlights2.get(l);
-                            flights4[2] = overigeFlights3.get(u);
-                            flights4[3] = flight;
-                            if(tijdControle4(flights4) == true){
-                            quadrupleFlights.add(flights4);
+                if(a_Code.equalsIgnoreCase(A_Code)){
+                     for(int r = 0; r < overigeFlights.size(); r++){
+                        if(overigeFlights.get(r).getA_Code().equalsIgnoreCase(overigeFlights2.get(p).getD_Code()) && overigeFlights2.get(p).getA_Code().equalsIgnoreCase(d_Code) && overigeFlights.get(r).getD_Code().equalsIgnoreCase(D_Code)){
+                            Flight[] flights3 = new Flight[3];
+                            flights3[0] = overigeFlights.get(r);
+                            flights3[1] = overigeFlights2.get(p);
+                            flights3[2] = flight;
+                            if(tijdControle3(flights3) == true){
+                            tripleFlights.add(flights3);
                             }
-                        }
-                    }
                     }
                 }
-                else if(i == 1){
-                    overigeFlights4.add(flight);
                 }
             }
             }
+          
       }
+      } */ }
+      
       DBConnector.closeConnection(con);
       vluchten.add(singleFlights);
       vluchten.add(doubleFlights);
       vluchten.add(tripleFlights);
-      vluchten.add(quadrupleFlights);
-      
-    }
       return vluchten;
-   
     }
-    
+      
   catch (Exception ex) {
-      System.out.println("ex.getMessage");
+      System.out.println(ex.getMessage());
       DBConnector.closeConnection(con);
       throw new DBException(ex);
     }
-  }
+    }
   
  /*
     Hier staan alle hulpmethoden weergegeven
@@ -299,6 +335,7 @@ public class DBFlight {
               Date date1 = format.parse(arrayVluchten[0].getArrivalDateTime().substring(10));
               Date date2 = format.parse(arrayVluchten[1].getDepDateTime().substring(10));
               long difference = date2.getTime() - date1.getTime();
+              System.out.println(difference);
               
               //de output van difference is in milliseconden, 1 800 000 milliseconden zijn 30 minuten,
               //dit nemen we als minimumtijd die je nodig hebt om over te stappen.
@@ -321,8 +358,8 @@ public class DBFlight {
               //dit nemen we als minimumtijd die je nodig hebt om over te stappen.
            
               Date date3 = format.parse(arrayVluchten[2].getDepDateTime().substring(10));
-              long difference2 = date3.getTime() - date2.getTime();
-              
+              Date date4 = format.parse(arrayVluchten[1].getArrivalDateTime().substring(10));
+              long difference2 = date3.getTime() - date4.getTime();
               if(difference1 >= 1800000 && difference2 >= 1800000){
                   possible = true;
               }
@@ -1406,8 +1443,24 @@ public static ArrayList<Flight[]> sortPrice(String dAirport, String aAirport, St
   public static void main(String args[]) throws ParseException, SQLException{
       
       try {
-        ArrayList<ArrayList<Flight[]>> test = getFlight("brussels", "london", "23/11/2019",3);
-          System.out.println(toString2(test));
+        ArrayList<ArrayList<Flight[]>> test = getFlight("brussels", "new york", "18/11/2019");
+          System.out.println("lengte arraylist1 = " + test.size());
+        for(int i = 0; i < test.size(); i++){
+            System.out.println("met" + i + " transfer = " + test.get(i).size());
+            for(int e = 0; e < test.get(i).size(); e ++){
+                for(int u = 0; u < test.get(i).get(e).length; u++){
+                    System.out.println("flight number: "+test.get(i).get(e)[u].getFlightNr());
+                    System.out.println("vertrek: "+test.get(i).get(e)[u].getD_Code());
+                    System.out.println("aankomst: "+test.get(i).get(e)[u].getA_Code());
+                    System.out.println("vertrek: "+test.get(i).get(e)[u].getDepDateTime() + " \n ");
+                    System.out.println("aankomst: "+test.get(i).get(e)[u].getArrivalDateTime()+ " \n ");
+                }
+                System.out.println("----------");
+                // D_CODE.equalsIgnoreCase(d_Code) && overigeFlights.get(p).getD_Code().equalsIgnoreCase(D_Code)
+            }
+        }
+
+//System.out.println(toString2(test));
     } 
     catch (DBException e) {
        System.out.println("fout");
