@@ -33,6 +33,7 @@ import project.db.DBCustomer;
 import project.db.DBException;
 import project.logic.Agency;
 import project.logic.Customer;
+import project.logic.CustomerDBLogic;
 
 /**
  * FXML Controller class
@@ -40,7 +41,7 @@ import project.logic.Customer;
  * @author aroen
  */
 public class KlantToevoegenController implements Initializable {
-private Agency model;
+private CustomerDBLogic model;
     private CheckBox ManCheck;
     private CheckBox VrouwCheck;
     @FXML
@@ -76,6 +77,7 @@ private Agency model;
         this.manRBtn.setToggleGroup(genderToggleGroup);
         this.vrouwRBtn.setToggleGroup(genderToggleGroup);
         genderToggleGroup.selectToggle(manRBtn);
+        model = CustomerDBLogic.getInstance();
     }    
     
     public String radioBtnCheck()                                               //beke mijn twijfels over
@@ -206,6 +208,7 @@ private Agency model;
  
     
     
+
 
 
 
