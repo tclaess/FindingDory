@@ -35,6 +35,7 @@ import project.db.DBException;
 import project.logic.Agency;
 import project.logic.Booking;
 import project.logic.Customer;
+import project.logic.CustomerDBLogic;
 
 /**
  * FXML Controller class
@@ -68,7 +69,7 @@ public class KlantInfoController {
     private Button back41;
     @FXML
     private Button delete44;
-    private Agency model;
+    private CustomerDBLogic model;
     @FXML
  public void changeIDCellEvent(CellEditEvent edittedCell){
      
@@ -182,8 +183,9 @@ public class KlantInfoController {
        LastNameColumn.setCellValueFactory(new PropertyValueFactory<Customer, String>("lastName"));
        BirthdayDateColumn.setCellValueFactory(new PropertyValueFactory<Customer, String>("birthdayDate"));
        GenderColumn.setCellValueFactory(new PropertyValueFactory<Customer, String>("gender"));
-      
-       tableView.setItems(getCustomer());
+      model = CustomerDBLogic.getInstance();
+      customers = FXCollections.observableArrayList(model.getCustomers());
+       tableView.setItems(customers);
        
        
            
@@ -208,18 +210,7 @@ public class KlantInfoController {
     }
     
  
-public ObservableList<Customer> getCustomer()
-    {
-     return null;
-        /*
-        
-        ObservableList<Customer> c = FXCollections.observableArrayList();
-        c.add(model.getCustomer(voornaamInfoTxt.getText(), achternaamInfoTxt.getText())); //Textfield uit OptiesKlantenController nodig
-        
-        return c;
-    
-        */
-    }
+
     
     
 
@@ -238,6 +229,7 @@ public ObservableList<Customer> getCustomer()
     
     
    
+
 
 
 
