@@ -126,6 +126,7 @@ public class DBFlight {
                              flights2[1] = flight;
                              if(tijdControle2(flights2) == true){
                              doubleFlights.add(flights2);
+                                 System.out.println("lit");
                              }
                              
                 }
